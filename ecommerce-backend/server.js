@@ -6,6 +6,8 @@ const dotenv = require("dotenv");
 const cartRoutes = require("./routes/cartRoutes");
 const authRoutes = require("./routes/authRoutes");
 
+const productRoutes = require("./routes/productRoutes");
+
 dotenv.config();
 
 const app = express();
@@ -22,7 +24,9 @@ mongoose.connect("mongodb://localhost:27017/cartdb", {
 
 // API Routes
 app.use("/api/cart", cartRoutes);
-app.use("/api/auth", authRoutes);  // NEW: auth routes
+app.use("/api/auth", authRoutes);  
+
+app.use("/api/products", productRoutes);
 
 // Start the server
 app.listen(5000, () => {

@@ -47,7 +47,7 @@ function HeroSection() {
   };
 
   return (
-    <section className="relative w-full overflow-hidden bg-gray-100 mb-12 sm:mb-16">
+  <section className="relative w-full overflow-hidden bg-background mb-12 sm:mb-16">
       <div className="relative w-full h-[300px] md:h-[450px] lg:h-[550px] xl:h-[650px]"> {/* Responsive height */}
         {heroSlides.map((slide, index) => (
           <div
@@ -72,7 +72,7 @@ function HeroSection() {
                 </p>
                 <Link
                   to={slide.ctaLink}
-                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full text-lg shadow-lg transform hover:scale-105 transition-all duration-300"
+                  className="inline-block bg-primary hover:bg-accent text-white font-semibold py-3 px-8 rounded-full text-lg shadow-lg transform hover:scale-105 transition-all duration-300"
                 >
                   {slide.ctaText}
                 </Link>

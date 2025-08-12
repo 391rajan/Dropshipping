@@ -5,7 +5,7 @@ function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-800 text-gray-300 py-12 mt-16 md:mt-24"> {/* Darker background, more vertical padding */}
+  <footer className="bg-accent text-background py-12 mt-16 md:mt-24"> {/* Modern accent background, more vertical padding */}
       <div className="max-w-7xl mx-auto px-6 md:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-8"> {/* Adjusted max-width and gaps */}
 
         {/* 1. Quick Links */}

@@ -7,6 +7,12 @@ import MainContent from "./components/MainContent";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ShopAll from "./pages/ShopAll";
+import Deals from "./pages/Deals";
+import TrackOrder from "./pages/TrackOrder";
+import Wishlist from "./pages/Wishlist";
+import AboutUs from "./pages/AboutUs";
+import Contact from "./pages/Contact";
 
 // Component to conditionally render layout
 function AppRoutes() {
@@ -16,7 +22,7 @@ function AppRoutes() {
   const hideLayout = location.pathname === "/login" || location.pathname === "/signup";
 
   return (
-    <div className="maincontainer bg-orange-200 min-h-screen flex flex-col">
+  <div className="maincontainer bg-background min-h-screen flex flex-col">
       {!hideLayout && <Navbar />}
 
       <div className="flex-grow">
@@ -25,6 +31,12 @@ function AppRoutes() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/shop" element={<ShopAll />} />
+          <Route path="/offers" element={<Deals />} />
+          <Route path="/track" element={<TrackOrder />} />
+          <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </div>
 
