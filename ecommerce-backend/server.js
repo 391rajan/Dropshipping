@@ -5,8 +5,10 @@ const dotenv = require("dotenv");
 
 const cartRoutes = require("./routes/cartRoutes");
 const authRoutes = require("./routes/authRoutes");
-
 const productRoutes = require("./routes/productRoutes");
+const wishlistRoutes = require('./routes/wishlistRoutes');
+const recentlyViewedRoutes = require('./routes/recentlyViewedRoutes');
+const compareRoutes = require('./routes/compareRoutes');
 
 dotenv.config();
 
@@ -15,7 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB connection
-mongoose.connect("mongodb://localhost:27017/cartdb", {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -25,8 +27,13 @@ mongoose.connect("mongodb://localhost:27017/cartdb", {
 // API Routes
 app.use("/api/cart", cartRoutes);
 app.use("/api/auth", authRoutes);  
-
+app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/addresses', require('./routes/addressRoutes'));
 app.use("/api/products", productRoutes);
+app.use('/api/categories', require('./routes/categoryRoutes'));
+app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/recently-viewed', recentlyViewedRoutes);
+app.use('/api/compare', compareRoutes);
 
 // Start the server
 app.listen(5000, () => {

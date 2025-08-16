@@ -13,6 +13,7 @@ import TrackOrder from "./pages/TrackOrder";
 import Wishlist from "./pages/Wishlist";
 import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
+import Profile from "./pages/Profile";
 
 // Component to conditionally render layout
 function AppRoutes() {
@@ -37,6 +38,7 @@ function AppRoutes() {
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
 
