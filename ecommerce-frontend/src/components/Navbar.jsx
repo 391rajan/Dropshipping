@@ -1,12 +1,14 @@
 // src/components/Navbar.jsx
 import { useState } from "react";
-import { Search, ShoppingCart, User, Menu, X, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Search, ShoppingCart, User, Menu, X, ChevronDown, LayoutGrid } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Example: Replace with actual cart item count from your state management
   const cartItemCount = 3;
@@ -28,14 +30,30 @@ function Navbar() {
         {/* Desktop Navigation - Top Right */}
   <div className="hidden md:flex items-center gap-6 lg:gap-8">
           {/* Search */}
-          <div className="relative flex items-center border border-accent rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-primary hover:border-primary transition-all duration-200">
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (searchQuery.trim()) {
+                navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                setSearchQuery("");
+              }
+            }}
+            className="relative flex items-center border border-accent rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-primary hover:border-primary transition-all duration-200"
+          >
             <Search className="w-4 h-4 text-accent mr-2" />
             <input
               type="text"
               placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="outline-none text-sm flex-grow bg-transparent placeholder-accent/60"
             />
-          </div>
+          </form>
+
+          {/* Compare */}
+          <Link to="/compare" className="relative p-1 rounded-full hover:bg-primary/10 transition-colors duration-200">
+            <LayoutGrid className="w-6 h-6 text-accent hover:text-primary" />
+          </Link>
 
           {/* Categories Dropdown */}
           <div

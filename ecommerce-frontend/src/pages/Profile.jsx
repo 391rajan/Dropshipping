@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Tab } from '@headlessui/react';
 import { MapPin, Package, CreditCard, User, Bell } from 'lucide-react';
-import { orderAPI, addressAPI } from '../services/api';
+import { orderAPI } from '../services/api';
+import AddressManagement from '../components/AddressManagement';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -9,23 +10,23 @@ function classNames(...classes) {
 
 function Profile() {
   const [orders, setOrders] = useState([]);
-  const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch user's orders and addresses
     const fetchUserData = async () => {
+      if (!localStorage.getItem('token')) {
+        setError('Please login to view your profile');
+        setLoading(false);
+        return;
+      }
+
       try {
-        const [ordersData, addressesData] = await Promise.all([
-          orderAPI.getMyOrders(),
-          addressAPI.getAll(),
-        ]);
-        
+        const ordersData = await orderAPI.getMyOrders();
         setOrders(ordersData);
-        setAddresses(addressesData);
       } catch (err) {
-        setError(err.message);
+        console.error('Error fetching user data:', err);
+        setError(err.response?.data?.message || 'Failed to load profile data');
       } finally {
         setLoading(false);
       }
@@ -124,43 +125,7 @@ function Profile() {
 
               {/* Addresses Panel */}
               <Tab.Panel>
-                <div className="space-y-4">
-                  {loading ? (
-                    <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                    </div>
-                  ) : error ? (
-                    <div className="text-red-500 text-center py-8">{error}</div>
-                  ) : addresses.length === 0 ? (
-                    <div className="text-center py-8">
-                      <MapPin className="w-16 h-16 text-accent/50 mx-auto mb-4" />
-                      <p className="text-accent">No addresses found</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {addresses.map((address) => (
-                        <div key={address._id} className="bg-white rounded-lg shadow p-6 border border-accent/10">
-                          <div className="flex justify-between items-start mb-4">
-                            <span className="px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary">
-                              {address.type}
-                            </span>
-                            {address.isDefault && (
-                              <span className="px-3 py-1 rounded-full text-sm font-medium bg-accent/10 text-accent">
-                                Default
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-accent">{address.street}</p>
-                          <p className="text-accent">{`${address.city}, ${address.state} ${address.zipCode}`}</p>
-                          <p className="text-accent">{address.country}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <button className="w-full md:w-auto bg-primary hover:bg-accent text-white font-semibold py-2 px-4 rounded-lg shadow transition-colors mt-4">
-                    Add New Address
-                  </button>
-                </div>
+                <AddressManagement />
               </Tab.Panel>
 
               {/* Payment Methods Panel */}

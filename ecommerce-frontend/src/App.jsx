@@ -1,6 +1,9 @@
 // src/App.jsx
 import React from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { CartProvider } from './context/CartContext';
+import { WishlistProvider } from './context/WishlistContext';
+import { CompareProvider } from './context/CompareContext';
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import MainContent from "./components/MainContent";
@@ -14,6 +17,12 @@ import Wishlist from "./pages/Wishlist";
 import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
 import Profile from "./pages/Profile";
+import Checkout from "./pages/Checkout";
+import OrderHistory from "./pages/OrderHistory";
+import Compare from "./pages/Compare";
+import ProductDetails from "./pages/ProductDetails";
+import SearchResults from "./pages/SearchResults";
+import CategoryPage from "./pages/CategoryPage";
 
 // Component to conditionally render layout
 function AppRoutes() {
@@ -39,6 +48,12 @@ function AppRoutes() {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/orders" element={<OrderHistory />} />
+          <Route path="/compare" element={<Compare />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/search" element={<SearchResults />} />
+          <Route path="/category/:id" element={<CategoryPage />} />
         </Routes>
       </div>
 
@@ -47,11 +62,17 @@ function AppRoutes() {
   );
 }
 
-// Wrap everything in BrowserRouter
+// Wrap everything in BrowserRouter and Providers
 function App() {
   return (
     <BrowserRouter>
-      <AppRoutes />
+      <CartProvider>
+        <WishlistProvider>
+          <CompareProvider>
+            <AppRoutes />
+          </CompareProvider>
+        </WishlistProvider>
+      </CartProvider>
     </BrowserRouter>
   );
 }

@@ -1,47 +1,115 @@
 // src/components/ProductCard.jsx
-import React from "react";
+import React, { useState } from "react"
 import { Link } from "react-router-dom";
-import { ShoppingCart, Heart } from "lucide-react";
+import { ShoppingCart, Heart, LayoutGrid } from "lucide-react";
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
+import { useCompare } from '../context/CompareContext';
 
 function ProductCard({ product }) {
+  const { addToCart } = useCart();
+  const { addToWishlist, isInWishlist } = useWishlist();
+  const { addToCompare, isInCompareList } = useCompare();
+  const [loading, setLoading] = useState(false);
+
   // Function to format price (e.g., $20.00)
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 2, // Ensure cents are always shown for consistency
+      minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(price);
   };
 
+  // Get the first image from the images array, or use a fallback
+  const getProductImage = () => {
+    const imagePath = product.images?.[0] || product.image;
+    if (imagePath) {
+      // Handle both uploaded images and custom images
+      if (imagePath.startsWith('http')) {
+        return imagePath;
+      } else if (imagePath.startsWith('uploads/')) {
+        return `http://localhost:5000/${imagePath}`;
+      } else if (imagePath.startsWith('custom-images/')) {
+        return `http://localhost:5000/${imagePath}`;
+      } else {
+        return `http://localhost:5000/uploads/${imagePath}`;
+      }
+    }
+    // Fallback image if no images are available
+    return 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=600&fit=crop';
+  };
+
   return (
-    // The card itself should be w-full to take up the entire grid column
-    <div className="
-  group bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden
-  border border-accent transform hover:-translate-y-1
-      w-full {/* THIS IS CRUCIAL: Ensures the card takes the full width of its grid column */}
-    ">
-     
-      <Link to={`/product/${product.id}`} className="block relative overflow-hidden aspect-w-4 aspect-h-3"> {/* Common aspect ratio for product images */}
+    <div className="group bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-accent transform hover:-translate-y-1 w-full">
+      <Link to={`/product/${product._id}`} className="block relative overflow-hidden aspect-w-4 aspect-h-3">
         <img
-          src={product.image}
+          src={getProductImage()}
           alt={product.name}
-          // The image now fills its aspect-ratio constrained parent
           className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => {
+            // Fallback if image fails to load
+            e.target.src = 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=600&fit=crop';
+          }}
         />
         {/* Quick actions on hover */}
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <button
-            className="p-2 m-1 bg-white rounded-full text-accent hover:bg-accent/20 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary"
-            aria-label="Add to Wishlist"
-            onClick={(e) => { e.preventDefault(); console.log('Added to wishlist:', product.name); }}
+            className={`p-2 m-1 bg-white rounded-full text-accent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary ${
+              isInWishlist(product._id) ? 'text-red-500 hover:text-red-600' : 'hover:bg-accent/20'
+            }`}
+            aria-label={isInWishlist(product._id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+            onClick={async (e) => { 
+              e.preventDefault();
+              setLoading(true);
+              try {
+                await addToWishlist(product._id);
+              } catch (error) {
+                console.error('Error updating wishlist:', error);
+              } finally {
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
           >
-            <Heart size={20} />
+            <Heart size={20} fill={isInWishlist(product._id) ? 'currentColor' : 'none'} />
+          </button>
+          <button
+            className={`p-2 m-1 bg-white rounded-full text-accent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary ${
+              isInCompareList(product._id) ? 'text-blue-500 hover:text-blue-600' : 'hover:bg-accent/20'
+            }`}
+            aria-label={isInCompareList(product._id) ? 'Remove from Compare' : 'Add to Compare'}
+            onClick={async (e) => {
+              e.preventDefault();
+              setLoading(true);
+              try {
+                await addToCompare(product._id);
+              } catch (error) {
+                console.error('Error updating compare list:', error);
+              } finally {
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
+          >
+            <LayoutGrid size={20} fill={isInCompareList(product._id) ? 'currentColor' : 'none'} />
           </button>
           <button
             className="p-2 m-1 bg-white rounded-full text-accent hover:bg-accent/20 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary"
             aria-label="Add to Cart"
-            onClick={(e) => { e.preventDefault(); console.log('Added to cart:', product.name); }}
+            onClick={async (e) => {
+              e.preventDefault();
+              setLoading(true);
+              try {
+                await addToCart(product, 1);
+              } catch (error) {
+                console.error('Error adding to cart:', error);
+              } finally {
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
           >
             <ShoppingCart size={20} />
           </button>
@@ -49,13 +117,13 @@ function ProductCard({ product }) {
       </Link>
 
       {/* Product Details */}
-      <div className="p-4 flex flex-col items-start"> {/* Added flex-col and items-start for consistent alignment */}
-  <h3 className="text-lg font-semibold text-accent mb-1 truncate w-full"> {/* w-full for truncate to work consistently */}
-          <Link to={`/product/${product.id}`} className="hover:text-blue-600 transition-colors duration-200">
+      <div className="p-4 flex flex-col items-start">
+        <h3 className="text-lg font-semibold text-accent mb-1 truncate w-full">
+          <Link to={`/product/${product._id}`} className="hover:text-blue-600 transition-colors duration-200">
             {product.name}
           </Link>
         </h3>
-  <p className="text-primary text-xl font-bold">{formatPrice(product.price)}</p>
+        <p className="text-primary text-xl font-bold">{formatPrice(product.price)}</p>
       </div>
     </div>
   );

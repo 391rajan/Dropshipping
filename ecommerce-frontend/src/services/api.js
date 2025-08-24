@@ -44,6 +44,21 @@ export const productAPI = {
     const response = await api.get(`/products/${id}/related`);
     return response.data;
   },
+
+  getByCategory: async (categoryId, filters = {}) => {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) params.append(key, value);
+    });
+    const response = await api.get(`/categories/${categoryId}/products?${params.toString()}`);
+    return response.data;
+  },
+
+  searchProducts: async (query, filters = {}) => {
+    const params = new URLSearchParams({ query, ...filters });
+    const response = await api.get(`/products/search?${params.toString()}`);
+    return response.data;
+  },
 };
 
 // Category APIs
@@ -214,6 +229,21 @@ export const addressAPI = {
     const response = await api.get('/addresses');
     return response.data;
   },
+  
+  create: async (address) => {
+    const response = await api.post('/addresses', address);
+    return response.data;
+  },
+
+  update: async (id, address) => {
+    const response = await api.put(`/addresses/${id}`, address);
+    return response.data;
+  },
+
+  delete: async (id) => {
+    const response = await api.delete(`/addresses/${id}`);
+    return response.data;
+  }
 };
 
 export default api;

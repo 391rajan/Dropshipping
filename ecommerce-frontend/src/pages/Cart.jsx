@@ -1,16 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { Trash2, Plus, Minus } from "lucide-react"; // Import Plus and Minus icons
-import axios from "axios";
-import { Link } from "react-router-dom"; // To link back to shop
+import React from "react";
+import { Trash2, Plus, Minus } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from '../context/CartContext'; // To link back to shop
 
 function Cart() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
-  const [error, setError] = useState(null); // Add error state
+  const navigate = useNavigate();
+  const { 
+    cart, 
+    updateQuantity, 
+    removeFromCart,
+    getCartTotal 
+  } = useCart();
 
-  const API_BASE = "http://localhost:5000/api/cart";
+  const decrementQty = (productId, currentQty) => {
+    if (currentQty > 1) {
+      updateQuantity(productId, currentQty - 1);
+    }
+  };
 
-  // Function to format price (reusing from ProductCard, good for consistency)
+  const incrementQty = (productId, currentQty) => {
+    updateQuantity(productId, currentQty + 1);
+  };
+
+  const removeItem = (productId) => {
+    if (window.confirm('Are you sure you want to remove this item?')) {
+      removeFromCart(productId);
+    }
+  };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -20,97 +37,11 @@ function Cart() {
     }).format(price);
   };
 
-  // Fetch items from backend
-  const fetchCart = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await axios.get(API_BASE);
-      setItems(res.data);
-    } catch (err) {
-      console.error("Failed to fetch cart items", err);
-      setError("Failed to load cart. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCart();
-  }, []);
-
-  // Increment quantity
-  const incrementQty = async (id, currentQty) => {
-    try {
-      const res = await axios.put(`${API_BASE}/${id}`, {
-        quantity: currentQty + 1,
-      });
-      setItems((prev) =>
-        prev.map((item) => (item._id === id ? res.data : item))
-      );
-    } catch (err) {
-      console.error("Failed to increment quantity", err);
-      // Optionally show a toast notification here
-    }
-  };
-
-  // Decrement quantity
-  const decrementQty = async (id, currentQty) => {
-    if (currentQty <= 1) return; // Prevent quantity from going below 1, better to remove item
-    try {
-      const res = await axios.put(`${API_BASE}/${id}`, {
-        quantity: currentQty - 1,
-      });
-      setItems((prev) =>
-        prev.map((item) => (item._id === id ? res.data : item))
-      );
-    } catch (err) {
-      console.error("Failed to decrement quantity", err);
-      // Optionally show a toast notification here
-    }
-  };
-
-  // Delete item
-  const removeItem = async (id, productName) => { // Added productName for confirmation
-    if (window.confirm(`Are you sure you want to remove "${productName}" from your cart?`)) {
-      try {
-        await axios.delete(`${API_BASE}/${id}`);
-        setItems((prev) => prev.filter((item) => item._id !== id));
-      } catch (err) {
-        console.error("Failed to delete item", err);
-        // Optionally show a toast notification here
-      }
-    }
-  };
-
-  // Calculate subtotal
-  const subtotal = items.reduce(
-    (acc, item) => acc + (item.price * item.quantity),
-    0
-  );
-
-  // Render loading, error, or empty states
-  if (loading) {
-    return (
-      <div className="max-w-4xl mx-auto p-6 text-center text-lg text-gray-700 min-h-[50vh] flex items-center justify-center">
-        Loading your cart...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="max-w-4xl mx-auto p-6 text-center text-lg text-red-600 min-h-[50vh] flex items-center justify-center">
-        {error}
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 md:py-12 bg-gray-50 min-h-[calc(100vh-16rem)]"> {/* Added padding, background, min-height for better feel */}
-      <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-8 text-center">Your Shopping Cart</h1> {/* Bigger, bolder title */}
+    <div className="max-w-6xl mx-auto px-4 py-8 md:py-12 bg-gray-50 min-h-[calc(100vh-16rem)]">
+      <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-8 text-center">Your Shopping Cart</h1>
 
-      {items.length === 0 ? (
+      {cart.items.length === 0 ? (
         <div className="text-center bg-white p-8 rounded-lg shadow-md max-w-lg mx-auto">
           <p className="text-xl text-gray-600 mb-6">Your cart is currently empty. Start shopping now!</p>
           <Link
@@ -124,7 +55,7 @@ function Cart() {
         <div className="lg:grid lg:grid-cols-3 lg:gap-8"> {/* Layout for larger screens */}
           {/* Cart Items List */}
           <div className="lg:col-span-2 space-y-6"> {/* More space between items */}
-            {items.map((item) => (
+            {cart.items.map((item) => (
               <div
                 key={item._id}
                 className="flex items-center gap-4 sm:gap-6 border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm bg-white hover:shadow-md transition-shadow duration-200"
@@ -183,10 +114,13 @@ function Cart() {
             <h3 className="text-2xl font-semibold text-gray-800 mb-6 border-b pb-4">Order Summary</h3>
             <div className="flex justify-between items-center text-xl font-medium text-gray-800 mb-4">
               <span>Subtotal:</span>
-              <span>{formatPrice(subtotal)}</span>
+              <span>{formatPrice(getCartTotal())}</span>
             </div>
             <p className="text-gray-600 text-sm mb-6">Shipping calculated at checkout.</p>
-            <button className="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200 text-lg shadow-md">
+            <button 
+              onClick={() => navigate('/checkout')}
+              className="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200 text-lg shadow-md"
+            >
               Proceed to Checkout
             </button>
             <Link to="/shop" className="block text-center text-blue-600 hover:text-blue-800 mt-4 text-sm transition-colors duration-200">
