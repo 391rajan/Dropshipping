@@ -1,7 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Filter, X } from "lucide-react";
 import ProductCard from "../components/ProductCard";
 import { productAPI, categoryAPI } from "../services/api";
+
+// A simple debounce hook
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 function ShopAll() {
   const [products, setProducts] = useState([]);
@@ -17,10 +34,10 @@ function ShopAll() {
   };
 
   const [filters, setFilters] = useState(initialFilters);
-  const [appliedFilters, setAppliedFilters] = useState(initialFilters);
   const [showFilters, setShowFilters] = useState(false);
+  const debouncedFilters = useDebounce(filters, 500); // 500ms debounce delay
 
-  const fetchProducts = async (filterValues) => {
+  const fetchProducts = useCallback(async (filterValues) => {
     setLoading(true);
     try {
       // Create a clean filter object without empty values
@@ -31,53 +48,46 @@ function ShopAll() {
         return acc;
       }, {});
 
-      const [productsData, categoriesData] = await Promise.all([
-        productAPI.getAll(cleanFilters),
-        categoryAPI.getAll()
-      ]);
+      const productsData = await productAPI.getAll(cleanFilters);
       setProducts(productsData);
-      setCategories(categoriesData);
     } catch (err) {
       setError(err.message || 'Failed to fetch products');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Initial fetch
+  const fetchCategories = useCallback(async () => {
+    try {
+        const categoriesData = await categoryAPI.getAll();
+        setCategories(categoriesData);
+    } catch (err) {
+        setError(err.message || 'Failed to fetch categories');
+    }
+  }, []);
+
+
+  // Initial fetch and on filter change
   useEffect(() => {
-    fetchProducts(appliedFilters);
-  }, [appliedFilters]);
+    fetchProducts(debouncedFilters);
+  }, [debouncedFilters, fetchProducts]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const handleFilterChange = (key, value) => {
     // Validate price inputs
     if ((key === 'minPrice' || key === 'maxPrice') && value !== '') {
       const numValue = Number(value);
       if (numValue < 0) return; // Don't allow negative prices
-      if (key === 'minPrice' && filters.maxPrice && numValue > Number(filters.maxPrice)) return;
-      if (key === 'maxPrice' && filters.minPrice && numValue < Number(filters.minPrice)) return;
     }
     
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleApplyFilters = () => {
-    // Validate price range
-    const min = Number(filters.minPrice);
-    const max = Number(filters.maxPrice);
-    
-    if ((min && max) && min > max) {
-      setError('Minimum price cannot be greater than maximum price');
-      return;
-    }
-    
-    setError(null);
-    setAppliedFilters(filters);
-  };
-
   const clearFilters = () => {
     setFilters(initialFilters);
-    setAppliedFilters(initialFilters);
     setError(null);
   };
 
@@ -184,29 +194,21 @@ function ShopAll() {
                 </div>
               )}
 
-              {/* Apply Filters Button */}
-              <button
-                onClick={handleApplyFilters}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md transition-colors mb-3"
-              >
-                Apply Filters
-              </button>
-
               {/* Active Filters Summary */}
-              {Object.entries(appliedFilters).some(([key, value]) => 
+              {Object.entries(filters).some(([key, value]) => 
                 value !== initialFilters[key]
               ) && (
                 <div className="text-sm text-gray-500">
-                  {appliedFilters.category && categories.find(c => c._id === appliedFilters.category) && (
-                    <div className="mb-1">Category: {categories.find(c => c._id === appliedFilters.category).name}</div>
+                  {filters.category && categories.find(c => c._id === filters.category) && (
+                    <div className="mb-1">Category: {categories.find(c => c._id === filters.category).name}</div>
                   )}
-                  {(appliedFilters.minPrice || appliedFilters.maxPrice) && (
+                  {(filters.minPrice || filters.maxPrice) && (
                     <div className="mb-1">
-                      Price: {appliedFilters.minPrice ? `$${appliedFilters.minPrice}` : '$0'} - 
-                      {appliedFilters.maxPrice ? ` $${appliedFilters.maxPrice}` : ' Any'}
+                      Price: {filters.minPrice ? `${filters.minPrice}` : '$0'} - 
+                      {filters.maxPrice ? ` ${filters.maxPrice}` : ' Any'}
                     </div>
                   )}
-                  {appliedFilters.inStock && (
+                  {filters.inStock && (
                     <div className="mb-1">In Stock Only</div>
                   )}
                 </div>
