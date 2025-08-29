@@ -5,21 +5,21 @@ import { Link } from "react-router-dom"; // For CTA button
 
 const heroSlides = [
   {
-    image: "/images/banner1.webp", // Use different, high-quality banner images
+    image: "https://placehold.co/1600x600/3498db/ffffff?text=Discover+Your+Style", // Placeholder Image
     title: "Discover Your Next Favorite Product",
     subtitle: "Curated collections for every need.",
     ctaText: "Shop New Arrivals",
     ctaLink: "/shop/new-arrivals",
   },
   {
-    image: "/images/banner2.webp",
+    image: "https://placehold.co/1600x600/e74c3c/ffffff?text=Unbeatable+Deals", // Placeholder Image
     title: "Unbeatable Deals This Week!",
     subtitle: "Don't miss out on limited-time offers.",
     ctaText: "Explore Deals",
     ctaLink: "/offers",
   },
   {
-    image: "/images/banner3.webp",
+    image: "https://placehold.co/1600x600/2ecc71/ffffff?text=Quality+Delivered", // Placeholder Image
     title: "Quality Products, Delivered Fast",
     subtitle: "Your dropshipping journey starts here.",
     ctaText: "Find Your Style",

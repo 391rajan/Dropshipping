@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { productAPI, wishlistAPI, cartAPI } from '../services/api';
+import { wishlistAPI, cartAPI } from '../services/api';
 
 const StoreContext = createContext();
 

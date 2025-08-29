@@ -22,7 +22,7 @@ function Navbar() {
 
         {/* Brand Logo */}
   <Link to="/" className="flex items-center text-xl font-bold text-primary">
-          <img src="/logo.png" alt="Dropshipping Store" className="h-7 md:h-8 mr-2" />
+          <img src="/vite.svg" alt="Logo" className="h-7 md:h-8 mr-2" />
           {/* You could add a brand name here with an accent color if desired */}
           {/* <span className="text-blue-600">YourBrand</span> */}
         </Link>

@@ -2,14 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import axios from 'axios';
+import CheckoutForm from '../components/CheckoutForm'; // Import the new component
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { cart, clearCart } = useCart();
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState('card'); // Default to card
   const [loading, setLoading] = useState(false);
+  const [clientSecret, setClientSecret] = useState(''); // State for Stripe client secret
+  const [paymentError, setPaymentError] = useState(null); // State for payment errors
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -28,7 +31,34 @@ const Checkout = () => {
     fetchAddresses();
   }, []);
 
-  const handlePlaceOrder = async () => {
+  // Fetch client secret when cart or selected address changes
+  useEffect(() => {
+    const getClientSecret = async () => {
+      if (cart.total > 0 && selectedAddress && paymentMethod === 'card') {
+        setLoading(true);
+        try {
+          const response = await axios.post('http://localhost:5000/api/payments/create-payment-intent', {
+            amount: Math.round(cart.total * 100), // Amount in cents
+          }, {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          });
+          setClientSecret(response.data.clientSecret);
+          setPaymentError(null); // Clear previous errors
+        } catch (error) {
+          console.error('Error creating payment intent:', error);
+          setPaymentError('Failed to initialize payment. Please try again.');
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setClientSecret(''); // Clear client secret if not using card or no total
+      }
+    };
+    getClientSecret();
+  }, [cart.total, selectedAddress, paymentMethod]);
+
+
+  const handlePlaceOrder = async (paymentIntentId = null) => { // paymentIntentId is optional for COD
     if (!selectedAddress) {
       alert('Please select a delivery address');
       return;
@@ -37,13 +67,15 @@ const Checkout = () => {
     setLoading(true);
     try {
       const orderData = {
-        addressId: selectedAddress,
+        shippingAddress: selectedAddress, // Changed from addressId
         paymentMethod,
         items: cart.items.map(item => ({
           product: item.product._id,
-          quantity: item.quantity
+          quantity: item.quantity,
+          price: item.product.price // Include price for order item
         })),
-        totalAmount: cart.total
+        totalPrice: cart.total,
+        paymentResult: paymentIntentId ? { id: paymentIntentId, status: 'succeeded' } : undefined,
       };
 
       const response = await axios.post('http://localhost:5000/api/orders', orderData, {
@@ -60,6 +92,15 @@ const Checkout = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const onPaymentSuccess = (paymentIntentId) => {
+    handlePlaceOrder(paymentIntentId);
+  };
+
+  const onPaymentFailure = (message) => {
+    setPaymentError(message);
+    setLoading(false);
   };
 
   return (
@@ -130,8 +171,38 @@ const Checkout = () => {
         </div>
       </div>
 
+      {/* Stripe Payment Form or COD button */}
+      {paymentMethod === 'card' && cart.total > 0 && selectedAddress && (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Enter Card Details</h2>
+          {loading && <p>Loading payment form...</p>}
+          {paymentError && <p className="text-red-500">{paymentError}</p>}
+          {clientSecret && !loading && (
+            <CheckoutForm
+              clientSecret={clientSecret}
+              onPaymentSuccess={onPaymentSuccess}
+              onPaymentFailure={onPaymentFailure}
+            />
+          )}
+        </div>
+      )}
+
+      {paymentMethod === 'cod' && (
+        <button
+          onClick={() => handlePlaceOrder()} // No paymentIntentId for COD
+          disabled={loading || !selectedAddress || cart.total === 0}
+          className={`w-full py-3 rounded-lg text-white font-medium ${
+            loading || !selectedAddress || cart.total === 0
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-blue-600 hover:bg-blue-700'
+          }`}
+        >
+          {loading ? 'Processing...' : 'Place Order (Cash on Delivery)'}
+        </button>
+      )}
+
       {/* Order Summary */}
-      <div className="mb-8">
+      <div className="mb-8 mt-8"> {/* Added mt-8 for spacing */}
         <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
         <div className="border rounded-lg p-4">
           {cart.items.map(item => (
@@ -148,19 +219,6 @@ const Checkout = () => {
           </div>
         </div>
       </div>
-
-      {/* Place Order Button */}
-      <button
-        onClick={handlePlaceOrder}
-        disabled={loading || !selectedAddress}
-        className={`w-full py-3 rounded-lg text-white font-medium ${
-          loading || !selectedAddress
-            ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-blue-600 hover:bg-blue-700'
-        }`}
-      >
-        {loading ? 'Processing...' : 'Place Order'}
-      </button>
     </div>
   );
 };

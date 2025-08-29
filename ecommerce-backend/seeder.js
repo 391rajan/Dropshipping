@@ -11,10 +11,8 @@ const products = [
     price: 999.99,
     originalPrice: 1099.99,
     images: [
-      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&h=600&fit=crop&crop=face'
+      'uploads/iphone15_pro_1.jpg',
+      'uploads/iphone15_pro_2.jpg'
     ],
     brand: 'Apple',
     stock: 50,
@@ -35,10 +33,8 @@ const products = [
     price: 1199.99,
     originalPrice: 1299.99,
     images: [
-      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=600&h=600&fit=crop&crop=face'
+      'uploads/macbook_air_m2_1.jpg',
+      'uploads/macbook_air_m2_2.jpg'
     ],
     brand: 'Apple',
     stock: 30,
@@ -59,10 +55,8 @@ const products = [
     price: 399.99,
     originalPrice: 449.99,
     images: [
-      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&h=600&fit=crop&crop=face'
+      'uploads/sony_wh1000xm5_1.jpg',
+      'uploads/sony_wh1000xm5_2.jpg'
     ],
     brand: 'Sony',
     stock: 75,
@@ -83,10 +77,8 @@ const products = [
     price: 799.99,
     originalPrice: 899.99,
     images: [
-      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&h=600&fit=crop&crop=face'
+      'uploads/samsung_galaxy_s24_1.jpg',
+      'uploads/samsung_galaxy_s24_2.jpg'
     ],
     brand: 'Samsung',
     stock: 45,
@@ -102,27 +94,25 @@ const products = [
     }
   },
   {
-    name: 'iPad Air 5th Gen',
-    description: 'Versatile tablet with M1 chip, perfect for work, creativity, and entertainment',
-    price: 599.99,
-    originalPrice: 649.99,
+    name: 'Dell XPS 15',
+    description: 'Powerful laptop with a stunning 4K display, ideal for professionals',
+    price: 1799.99,
+    originalPrice: 1999.99,
     images: [
-      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600&h=600&fit=crop&crop=face'
+      'uploads/dell_xps_15_1.jpg',
+      'uploads/dell_xps_15_2.jpg'
     ],
-    brand: 'Apple',
-    stock: 60,
-    rating: 4.8,
-    numReviews: 750,
-    tags: ['tablet', 'iPad', 'M1 chip', 'retina display'],
-    isFeatured: false,
+    brand: 'Dell',
+    stock: 20,
+    rating: 4.9,
+    numReviews: 650,
+    tags: ['laptop', '4k display', 'professional', 'powerful'],
+    isFeatured: true,
     specifications: {
-      'Processor': 'M1 chip',
-      'RAM': '8GB',
-      'Storage': '64GB',
-      'Display': '10.9-inch Liquid Retina'
+      'Processor': 'Intel Core i7',
+      'RAM': '16GB',
+      'Storage': '512GB SSD',
+      'Display': '15.6-inch 4K UHD'
     }
   },
 
@@ -133,10 +123,8 @@ const products = [
     price: 29.99,
     originalPrice: 39.99,
     images: [
-      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop&crop=face'
+      'uploads/cotton_tshirt_1.jpg',
+      'uploads/cotton_tshirt_2.jpg'
     ],
     brand: 'EcoWear',
     stock: 200,
@@ -163,10 +151,8 @@ const products = [
     price: 89.99,
     originalPrice: 119.99,
     images: [
-      'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&h=600&fit=crop&crop=face'
+      'uploads/slim_fit_jeans_1.jpg',
+      'uploads/slim_fit_jeans_2.jpg'
     ],
     brand: 'DenimCo',
     stock: 150,
@@ -193,10 +179,8 @@ const products = [
     price: 149.99,
     originalPrice: 199.99,
     images: [
-      'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop&crop=face'
+      'uploads/casual_blazer_1.jpg',
+      'uploads/casual_blazer_2.jpg'
     ],
     brand: 'StyleCraft',
     stock: 80,
@@ -225,10 +209,8 @@ const products = [
     price: 129.99,
     originalPrice: 149.99,
     images: [
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&h=600&fit=crop&crop=face'
+      'uploads/nike_air_max_270_1.jpg',
+      'uploads/nike_air_max_270_2.jpg'
     ],
     brand: 'Nike',
     stock: 120,
@@ -256,10 +238,8 @@ const products = [
     price: 179.99,
     originalPrice: 199.99,
     images: [
-      'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=600&fit=crop&crop=face'
+      'uploads/adidas_ultraboost_22_1.jpg',
+      'uploads/adidas_ultraboost_22_2.jpg'
     ],
     brand: 'Adidas',
     stock: 95,
@@ -289,10 +269,8 @@ const products = [
     price: 79.99,
     originalPrice: 99.99,
     images: [
-      'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&h=600&fit=crop&crop=face'
+      'uploads/smart_led_desk_lamp_1.jpg',
+      'uploads/smart_led_desk_lamp_2.jpg'
     ],
     brand: 'SmartHome',
     stock: 65,
@@ -313,10 +291,8 @@ const products = [
     price: 129.99,
     originalPrice: 159.99,
     images: [
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=600&fit=crop&crop=face'
+      'uploads/coffee_maker_1.jpg',
+      'uploads/coffee_maker_2.jpg'
     ],
     brand: 'BrewMaster',
     stock: 45,
@@ -339,10 +315,8 @@ const products = [
     price: 49.99,
     originalPrice: 69.99,
     images: [
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=600&fit=crop&crop=face'
+      'uploads/yoga_mat_1.jpg',
+      'uploads/yoga_mat_2.jpg'
     ],
     brand: 'YogaLife',
     stock: 180,
@@ -363,10 +337,8 @@ const products = [
     price: 299.99,
     originalPrice: 399.99,
     images: [
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=600&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=600&fit=crop&crop=face'
+      'uploads/adjustable_dumbbells_1.jpg',
+      'uploads/adjustable_dumbbells_2.jpg'
     ],
     brand: 'PowerBlock',
     stock: 35,

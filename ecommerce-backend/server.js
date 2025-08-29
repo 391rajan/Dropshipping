@@ -33,6 +33,8 @@ app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/addresses', require('./routes/addressRoutes'));
 app.use("/api/products", productRoutes);
 app.use('/api/categories', require('./routes/categoryRoutes'));
+app.use('/api/payments', require('./routes/paymentRoutes'));
+app.use('/api/coupons', require('./routes/couponRoutes')); // Added coupon routes
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/recently-viewed', recentlyViewedRoutes);
 app.use('/api/compare', compareRoutes);

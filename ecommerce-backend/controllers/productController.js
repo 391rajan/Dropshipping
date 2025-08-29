@@ -22,27 +22,19 @@ exports.getProducts = async (req, res) => {
       inStock
     } = req.query;
 
-    // Build filter query
     const query = {};
-    
-    // Category filter
     if (category) {
       query.category = category;
     }
-
-    // Price range filter
     if (minPrice || maxPrice) {
       query.price = {};
       if (minPrice) query.price.$gte = Number(minPrice);
       if (maxPrice) query.price.$lte = Number(maxPrice);
     }
-
-    // In stock filter
     if (inStock === 'true') {
       query.stockQuantity = { $gt: 0 };
     }
 
-    // Build sort options
     let sortOptions = {};
     switch (sortBy) {
       case 'price_asc':
@@ -58,7 +50,7 @@ exports.getProducts = async (req, res) => {
         sortOptions = { name: -1 };
         break;
       default:
-        sortOptions = { createdAt: -1 }; // newest first
+        sortOptions = { createdAt: -1 };
     }
 
     const products = await Product.find(query)
@@ -66,6 +58,48 @@ exports.getProducts = async (req, res) => {
       .populate('category', 'name');
       
     res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get a single product by ID
+exports.getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).populate('category');
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Update a product by ID
+exports.updateProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json(product);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Delete a product by ID
+exports.deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json({ message: 'Product deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

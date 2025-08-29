@@ -1,33 +1,27 @@
-// routes/cart.js
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const CartItem = require("../models/CartItems");
+const {
+  getCart,
+  addToCart,
+  removeFromCart,
+  updateCartItemQuantity,
+  applyCouponToCart,
+  removeCouponFromCart,
+  clearCart,
+} = require('../controllers/cartController');
+const { protect } = require('../middleware/auth');
 
-// GET all cart items
-router.get("/", async (req, res) => {
-  const items = await CartItem.find();
-  res.json(items);
-});
+// All cart routes require authentication
+router.route('/')
+  .get(protect, getCart)
+  .post(protect, addToCart);
 
-// ADD a new cart item
-router.post("/", async (req, res) => {
-  const newItem = new CartItem(req.body);
-  await newItem.save();
-  res.status(201).json(newItem);
-});
+router.route('/:productId')
+  .delete(protect, removeFromCart)
+  .put(protect, updateCartItemQuantity);
 
-// UPDATE quantity
-router.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const updatedItem = await CartItem.findByIdAndUpdate(id, req.body, { new: true });
-  res.json(updatedItem);
-});
-
-// DELETE an item
-router.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-  await CartItem.findByIdAndDelete(id);
-  res.json({ message: "Item deleted" });
-});
+router.route('/apply-coupon').post(protect, applyCouponToCart);
+router.route('/remove-coupon').delete(protect, removeCouponFromCart);
+router.route('/clear').delete(protect, clearCart);
 
 module.exports = router;

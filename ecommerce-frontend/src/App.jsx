@@ -23,6 +23,7 @@ import Compare from "./pages/Compare";
 import ProductDetails from "./pages/ProductDetails";
 import SearchResults from "./pages/SearchResults";
 import CategoryPage from "./pages/CategoryPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 // Component to conditionally render layout
 function AppRoutes() {
@@ -54,6 +55,7 @@ function AppRoutes() {
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/category/:id" element={<CategoryPage />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </div>
 
