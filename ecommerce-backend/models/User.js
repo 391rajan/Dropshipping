@@ -19,8 +19,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: false,
   },
-}, {
-  timestamps: true // Automatically adds createdAt and updatedAt
-});
+  passwordResetToken: String,
+  passwordResetExpires: Date,
+  isVerified: { type: Boolean, default: false },
+  verificationToken: String,
+
 
 module.exports = mongoose.model("User", userSchema);

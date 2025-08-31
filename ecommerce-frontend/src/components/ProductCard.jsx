@@ -53,7 +53,11 @@ function ProductCard({ product }) {
             e.target.src = 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=600&fit=crop';
           }}
         />
-        {/* Quick actions on hover */}
+        {product.outOfStock && (
+          <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+            Out of Stock
+          </div>
+        )}
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <button
             className={`p-2 m-1 bg-white rounded-full text-accent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary ${
@@ -109,7 +113,7 @@ function ProductCard({ product }) {
                 setLoading(false);
               }
             }}
-            disabled={loading}
+            disabled={loading || product.outOfStock}
           >
             <ShoppingCart size={20} />
           </button>

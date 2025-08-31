@@ -81,6 +81,10 @@ exports.addToCart = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
+    if (product.stock < quantity) {
+      return res.status(400).json({ message: 'Not enough product in stock' });
+    }
+
     const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
 
     if (itemIndex > -1) {

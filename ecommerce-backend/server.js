@@ -15,7 +15,11 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+
+// Passport middleware
+const passport = require('passport');
+require('./config/passport')(passport);
+app.use(passport.initialize());
 app.use('/public', express.static('public'));
 
 // MongoDB connection

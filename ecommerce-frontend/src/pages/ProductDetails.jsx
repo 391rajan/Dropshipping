@@ -177,11 +177,11 @@ const ProductDetails = () => {
           </div>
 
           {/* Stock Status */}
-          <div className={`text-sm font-medium ${product.stockQuantity > 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {product.stockQuantity > 0 ? (
+          <div className={`text-sm font-medium ${!product.outOfStock ? 'text-green-600' : 'text-red-600'}`}>
+            {!product.outOfStock ? (
               <>
                 <span className="inline-block w-2 h-2 rounded-full bg-green-600 mr-2"></span>
-                In Stock ({product.stockQuantity} available)
+                In Stock ({product.stock} available)
               </>
             ) : (
               <>
@@ -198,7 +198,7 @@ const ProductDetails = () => {
 
           {/* Quantity and Actions */}
           <div className="space-y-4 pt-4 border-t">
-            {product.stockQuantity > 0 && (
+            {!product.outOfStock && (
               <div className="flex items-center gap-4">
                 <label className="font-medium">Quantity:</label>
                 <div className="flex items-center border rounded-md">
@@ -212,20 +212,20 @@ const ProductDetails = () => {
                   <input
                     type="number"
                     min="1"
-                    max={product.stockQuantity}
+                    max={product.stock}
                     value={quantity}
                     onChange={(e) => {
                       const val = parseInt(e.target.value);
-                      if (val >= 1 && val <= product.stockQuantity) {
+                      if (val >= 1 && val <= product.stock) {
                         setQuantity(val);
                       }
                     }}
                     className="w-16 text-center border-x"
                   />
                   <button
-                    onClick={() => setQuantity(prev => Math.min(product.stockQuantity, prev + 1))}
+                    onClick={() => setQuantity(prev => Math.min(product.stock, prev + 1))}
                     className="px-3 py-2 hover:bg-gray-100"
-                    disabled={quantity >= product.stockQuantity}
+                    disabled={quantity >= product.stock}
                   >
                     +
                   </button>
@@ -237,11 +237,11 @@ const ProductDetails = () => {
             <div className="flex flex-col gap-3">
               <button
                 onClick={handleAddToCart}
-                disabled={!product.stockQuantity}
+                disabled={product.outOfStock}
                 className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 <ShoppingCart size={20} />
-                {product.stockQuantity ? 'Add to Cart' : 'Out of Stock'}
+                {!product.outOfStock ? 'Add to Cart' : 'Out of Stock'}
               </button>
               
               <div className="grid grid-cols-2 gap-3">

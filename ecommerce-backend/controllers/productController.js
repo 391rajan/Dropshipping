@@ -57,7 +57,12 @@ exports.getProducts = async (req, res) => {
       .sort(sortOptions)
       .populate('category', 'name');
       
-    res.json(products);
+    const productsWithStockStatus = products.map(product => {
+      const outOfStock = product.stock === 0;
+      return { ...product.toObject(), outOfStock };
+    });
+
+    res.json(productsWithStockStatus);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -70,7 +75,8 @@ exports.getProductById = async (req, res) => {
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
-    res.json(product);
+    const outOfStock = product.stock === 0;
+    res.json({ ...product.toObject(), outOfStock });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

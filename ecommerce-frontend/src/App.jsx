@@ -24,6 +24,8 @@ import ProductDetails from "./pages/ProductDetails";
 import SearchResults from "./pages/SearchResults";
 import CategoryPage from "./pages/CategoryPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import ForgotPassword from "./pages/ForgotPassword";
+import EmailVerification from "./pages/EmailVerification";
 
 // Component to conditionally render layout
 function AppRoutes() {
@@ -42,6 +44,9 @@ function AppRoutes() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/verify-email/:token" element={<EmailVerification />} />
           <Route path="/shop" element={<ShopAll />} />
           <Route path="/offers" element={<Deals />} />
           <Route path="/track" element={<TrackOrder />} />
