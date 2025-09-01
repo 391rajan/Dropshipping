@@ -5,12 +5,14 @@ const User = require('../models/User');
 const protect = async (req, res, next) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
+    console.log("Token received in middleware:", token);
     
     if (!token) {
       return res.status(401).json({ message: 'Access denied. No token provided.' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key_change_in_production');
+    console.log("Decoded token:", decoded);
     const user = await User.findById(decoded.id).select('-password');
     
     if (!user) {
@@ -20,6 +22,7 @@ const protect = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    console.error("Error in protect middleware:", error);
     res.status(401).json({ message: 'Invalid token.' });
   }
 };

@@ -171,6 +171,7 @@ function ShopAll() {
                   <option value="price_desc">Price: High to Low</option>
                   <option value="name_asc">Name: A to Z</option>
                   <option value="name_desc">Name: Z to A</option>
+                  <option value="rating_desc">Rating: High to Low</option>
                 </select>
               </div>
 

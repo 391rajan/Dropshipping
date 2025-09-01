@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { authAPI } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -12,10 +17,16 @@ function Login() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login data:", formData);
-    // TODO: Send POST request to backend
+    try {
+      const data = await authAPI.login(formData);
+      login(data.token);
+      navigate("/");
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert(error.response?.data?.message || "Login failed");
+    }
   };
 
   return (

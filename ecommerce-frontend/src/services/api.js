@@ -24,6 +24,17 @@ api.interceptors.request.use(
   }
 );
 
+export const authAPI = {
+  login: async (credentials) => {
+    const response = await api.post('/auth/login', credentials);
+    return response.data;
+  },
+  signup: async (userInfo) => {
+    const response = await api.post('/auth/signup', userInfo);
+    return response.data;
+  },
+};
+
 // Product APIs
 export const productAPI = {
   getAll: async (filters = {}) => {
@@ -59,9 +70,18 @@ export const productAPI = {
     const response = await api.get(`/products/search?${params.toString()}`);
     return response.data;
   },
+
+  getSearchSuggestions: async (query) => {
+    const response = await api.get(`/products/search/suggestions?query=${query}`);
+    return response.data;
+  },
+
+  getProductCount: async () => {
+    const response = await api.get('/products/count');
+    return response.data;
+  },
 };
 
-// Category APIs
 export const categoryAPI = {
   getAll: async () => {
     const response = await api.get('/categories');
@@ -221,6 +241,16 @@ export const orderAPI = {
     const response = await api.get('/orders/my-orders');
     return response.data;
   },
+
+  getOrderCount: async () => {
+    const response = await api.get('/orders/count');
+    return response.data;
+  },
+
+  getTotalRevenue: async () => {
+    const response = await api.get('/orders/revenue');
+    return response.data;
+  },
 };
 
 // Address APIs
@@ -246,6 +276,21 @@ export const addressAPI = {
   }
 };
 
+// Payment APIs
+export const paymentAPI = {
+  createOrder: async (data) => {
+    // data should contain { amount, currency, receipt }
+    const response = await api.post('/payments/create-order', data);
+    return response.data;
+  },
+
+  verifySignature: async (data) => {
+    // data should contain { razorpay_order_id, razorpay_payment_id, razorpay_signature }
+    const response = await api.post('/payments/verify-signature', data);
+    return response.data;
+  },
+};
+
 export const forgotPassword = (email) => {
   return api.post("/auth/forgot-password", email);
 };
@@ -256,6 +301,39 @@ export const resetPassword = (token, password) => {
 
 export const verifyEmail = (token) => {
   return api.get(`/auth/verify-email/${token}`);
+};
+
+export const stockNotificationAPI = {
+  create: async (data) => {
+    const response = await api.post('/stock-notifications', data);
+    return response.data;
+  },
+};
+
+export const createQuestion = async (data) => {
+  const response = await api.post('/questions', data);
+  return response.data;
+};
+
+export const getQuestionsForProduct = async (productId) => {
+  const response = await api.get(`/questions/product/${productId}`);
+  return response.data;
+};
+
+export const subscribeToNewsletter = async (data) => {
+  const response = await api.post('/newsletter/subscribe', data);
+  return response.data;
+};
+
+export const userAPI = {
+  getUserCount: async () => {
+    const response = await api.get('/auth/users/count');
+    return response.data;
+  },
+  getProfile: async () => {
+    const response = await api.get('/auth/profile');
+    return response.data;
+  },
 };
 
 export default api;

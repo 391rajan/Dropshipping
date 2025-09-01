@@ -1,35 +1,45 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from './AuthContext';
 
 const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
 
   useEffect(() => {
     fetchWishlist();
-  }, []);
+  }, [token]);
 
   const fetchWishlist = async () => {
+    if (!token) {
+      setWishlist([]);
+      setLoading(false);
+      return;
+    }
     try {
       const response = await axios.get('http://localhost:5000/api/wishlist', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setWishlist(response.data);
+      // Ensure response.data is an array before setting the wishlist
+      setWishlist(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error fetching wishlist:', error);
+      setWishlist([]);
     } finally {
       setLoading(false);
     }
   };
 
   const addToWishlist = async (productId) => {
+    if (!token) return false;
     try {
       const response = await axios.post(`http://localhost:5000/api/wishlist/add/${productId}`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setWishlist(response.data);
+      setWishlist(Array.isArray(response.data) ? response.data : []);
       return true;
     } catch (error) {
       console.error('Error adding to wishlist:', error);
@@ -38,11 +48,12 @@ export const WishlistProvider = ({ children }) => {
   };
 
   const removeFromWishlist = async (productId) => {
+    if (!token) return false;
     try {
       const response = await axios.delete(`http://localhost:5000/api/wishlist/remove/${productId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setWishlist(response.data);
+      setWishlist(Array.isArray(response.data) ? response.data : []);
       return true;
     } catch (error) {
       console.error('Error removing from wishlist:', error);

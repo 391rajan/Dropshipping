@@ -238,7 +238,10 @@ const ProductDetails = () => {
             <button
               type="button"
               onClick={handleAddToCart}
-              disabled={!selectedVariant && product.variants?.length > 0}
+              disabled={
+                (!selectedVariant && product.variants?.length > 0) ||
+                currentVariant.stockCount === 0
+              }
               className="flex-1 bg-primary hover:bg-accent disabled:bg-gray-300 text-white font-semibold py-3 px-8 rounded-lg shadow transition-colors"
             >
               Add to Cart

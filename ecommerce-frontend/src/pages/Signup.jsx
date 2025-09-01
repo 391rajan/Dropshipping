@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { authAPI } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const [formData, setFormData] = useState({
@@ -8,6 +11,8 @@ function Signup() {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -16,10 +21,16 @@ function Signup() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Signup data:", formData);
-    // TODO: Send POST request to backend
+    try {
+      await authAPI.signup(formData);
+      alert("Account created successfully! Please log in.");
+      navigate("/login");
+    } catch (error) {
+      console.error("Signup failed:", error);
+      alert(error.response?.data?.message || "Signup failed");
+    }
   };
 
   return (
@@ -86,14 +97,6 @@ function Signup() {
 
           {/* Submit Button */}
           <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
-          >
-            Sign Up
-          </button>
-        </form>
-
-        <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
           >

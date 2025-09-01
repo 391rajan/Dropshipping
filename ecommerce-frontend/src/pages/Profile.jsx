@@ -3,19 +3,21 @@ import { Tab } from '@headlessui/react';
 import { MapPin, Package, CreditCard, User, Bell } from 'lucide-react';
 import { orderAPI } from '../services/api';
 import AddressManagement from '../components/AddressManagement';
+import { useAuth } from '../context/AuthContext';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
 function Profile() {
+  const { user, loading: authLoading } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!localStorage.getItem('token')) {
+      if (!user) {
         setError('Please login to view your profile');
         setLoading(false);
         return;
@@ -32,8 +34,10 @@ function Profile() {
       }
     };
     
-    fetchUserData();
-  }, []);
+    if (!authLoading) {
+      fetchUserData();
+    }
+  }, [user, authLoading]);
 
   const tabs = [
     { name: 'Orders', icon: Package },
@@ -42,6 +46,22 @@ function Profile() {
     { name: 'Account Settings', icon: User },
     { name: 'Notifications', icon: Bell },
   ];
+
+  if (authLoading || loading) {
+    return (
+      <main className="bg-background min-h-screen py-10 flex justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </main>
+    );
+  }
+
+  if (error || !user) {
+    return (
+      <main className="bg-background min-h-screen py-10 flex justify-center items-center">
+        <div className="text-red-500 text-center">{error || 'User not logged in.'}</div>
+      </main>
+    );
+  }
 
   return (
     <main className="bg-background min-h-screen py-10">
@@ -59,8 +79,8 @@ function Profile() {
                 <User size={16} />
               </button>
             </div>
-            <h1 className="text-2xl font-bold text-primary mt-4">John Doe</h1>
-            <p className="text-accent">Member since August 2025</p>
+            <h1 className="text-2xl font-bold text-primary mt-4">{user.name}</h1>
+            <p className="text-accent">{user.email}</p>
           </div>
 
           {/* Tabs Navigation */}
@@ -146,7 +166,7 @@ function Profile() {
                       <input
                         type="text"
                         className="w-full px-4 py-2 rounded-lg border border-accent/20 focus:outline-none focus:ring-2 focus:ring-primary"
-                        defaultValue="John Doe"
+                        defaultValue={user.name}
                       />
                     </div>
                     <div>
@@ -154,7 +174,7 @@ function Profile() {
                       <input
                         type="email"
                         className="w-full px-4 py-2 rounded-lg border border-accent/20 focus:outline-none focus:ring-2 focus:ring-primary"
-                        defaultValue="john@example.com"
+                        defaultValue={user.email}
                       />
                     </div>
                     <div>
@@ -162,7 +182,7 @@ function Profile() {
                       <input
                         type="tel"
                         className="w-full px-4 py-2 rounded-lg border border-accent/20 focus:outline-none focus:ring-2 focus:ring-primary"
-                        defaultValue="+91 1234567890"
+                        defaultValue={user.phone || 'N/A'}
                       />
                     </div>
                     <button

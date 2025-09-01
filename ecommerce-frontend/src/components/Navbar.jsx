@@ -1,19 +1,63 @@
 // src/components/Navbar.jsx
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Search, ShoppingCart, User, Menu, X, ChevronDown, LayoutGrid } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { productAPI } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
   const navigate = useNavigate();
+  const { token, logout, loading: authLoading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState(null);
+
+  const categoriesTimeoutRef = useRef(null);
+  const profileTimeoutRef = useRef(null);
+
+  const handleSearchChange = async (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    if (query.length > 2) {
+      const data = await productAPI.getSearchSuggestions(query);
+      setSuggestions(data);
+    } else {
+      setSuggestions(null);
+    }
+  };
 
   // Example: Replace with actual cart item count from your state management
   const cartItemCount = 3;
-  // Example: Replace with actual user login status
-  const isLoggedIn = true; // For demonstration
+
+  const handleLogout = () => {
+    logout();
+    setMobileMenuOpen(false);
+    navigate("/");
+  };
+
+  const handleCategoriesMouseEnter = () => {
+    clearTimeout(categoriesTimeoutRef.current);
+    setShowCategories(true);
+  };
+
+  const handleCategoriesMouseLeave = () => {
+    categoriesTimeoutRef.current = setTimeout(() => {
+      setShowCategories(false);
+    }, 200); // 200ms delay
+  };
+
+  const handleProfileMouseEnter = () => {
+    clearTimeout(profileTimeoutRef.current);
+    setShowProfile(true);
+  };
+
+  const handleProfileMouseLeave = () => {
+    profileTimeoutRef.current = setTimeout(() => {
+      setShowProfile(false);
+    }, 200); // 200ms delay
+  };
 
   return (
   <nav className="bg-background w-full border-b border-accent/20 shadow-md z-50 relative"> {/* Stronger shadow */}
@@ -45,9 +89,58 @@ function Navbar() {
               type="text"
               placeholder="Search products..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               className="outline-none text-sm flex-grow bg-transparent placeholder-accent/60"
             />
+            {suggestions && (
+              <div className="absolute top-full mt-2 left-0 w-full bg-white shadow-lg border border-accent rounded-lg p-2 z-20">
+                {suggestions.products.length > 0 && (
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-500 px-2">Products</h3>
+                    {suggestions.products.map((product) => (
+                      <Link
+                        key={product._id}
+                        to={`/product/${product._id}`}
+                        className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150"
+                        onClick={() => setSuggestions(null)}
+                      >
+                        {product.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                {suggestions.categories.length > 0 && (
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-500 px-2 mt-2">Categories</h3>
+                    {suggestions.categories.map((category) => (
+                      <Link
+                        key={category._id}
+                        to={`/category/${category._id}`}
+                        className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150"
+                        onClick={() => setSuggestions(null)}
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                {suggestions.brands.length > 0 && (
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-500 px-2 mt-2">Brands</h3>
+                    {suggestions.brands.map((brand) => (
+                      <Link
+                        key={brand}
+                        to={`/search?brand=${brand}`}
+                        className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150"
+                        onClick={() => setSuggestions(null)}
+                      >
+                        {brand}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </form>
 
           {/* Compare */}
@@ -58,8 +151,8 @@ function Navbar() {
           {/* Categories Dropdown */}
           <div
             className="relative"
-            onMouseEnter={() => setShowCategories(true)}
-            onMouseLeave={() => setShowCategories(false)}
+            onMouseEnter={handleCategoriesMouseEnter}
+            onMouseLeave={handleCategoriesMouseLeave}
           >
             <button
               className="hover:text-primary font-medium flex items-center transition-colors duration-200 text-accent" // Added base text color
@@ -92,8 +185,8 @@ function Navbar() {
           {/* Profile Dropdown */}
           <div
             className="relative"
-            onMouseEnter={() => setShowProfile(true)}
-            onMouseLeave={() => setShowProfile(false)}
+            onMouseEnter={handleProfileMouseEnter}
+            onMouseLeave={handleProfileMouseLeave}
           >
             <button
               className="p-1 rounded-full hover:bg-primary/10 transition-colors duration-200" // Emerald hover background
@@ -105,13 +198,15 @@ function Navbar() {
             </button>
             {showProfile && (
               <div className="absolute top-full mt-2 right-0 bg-white shadow-lg border border-accent rounded-lg p-2 w-36 z-20">
-                {!isLoggedIn ? (
+                {authLoading ? (
+                  <div className="p-2 text-accent">Loading...</div>
+                ) : !token ? (
                   <Link to="/login" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">Login</Link>
                 ) : (
                   <>
                     <Link to="/profile" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">My Profile</Link>
                     <Link to="/orders" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">My Orders</Link>
-                    <button className="w-full text-left hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">Logout</button>
+                    <button onClick={handleLogout} className="w-full text-left hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">Logout</button>
                   </>
                 )}
               </div>
@@ -157,12 +252,14 @@ function Navbar() {
           <div className="border-t border-accent/20 my-2"></div> {/* Separator */}
           <Link to="/categories" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>All Categories</Link>
           <Link to="/cart" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Cart ({cartItemCount})</Link>
-          {!isLoggedIn ? (
+          {authLoading ? (
+            <div className="p-2 text-accent">Loading...</div>
+          ) : !token ? (
             <Link to="/login" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Login / Register</Link>
           ) : (
             <>
               <Link to="/profile" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>My Account</Link>
-              <button className="w-full text-left py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => { /* handle logout */ setMobileMenuOpen(false); }}>Logout</button>
+              <button onClick={handleLogout} className="w-full text-left py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary">Logout</button>
             </>
           )}
         </div>

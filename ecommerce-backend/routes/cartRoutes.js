@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const asyncHandler = require('express-async-handler');
 const {
   getCart,
   addToCart,
@@ -13,15 +14,15 @@ const { protect } = require('../middleware/auth');
 
 // All cart routes require authentication
 router.route('/')
-  .get(protect, getCart)
-  .post(protect, addToCart);
+  .get(protect, asyncHandler(getCart))
+  .post(protect, asyncHandler(addToCart));
 
 router.route('/:productId')
-  .delete(protect, removeFromCart)
-  .put(protect, updateCartItemQuantity);
+  .delete(protect, asyncHandler(removeFromCart))
+  .put(protect, asyncHandler(updateCartItemQuantity));
 
-router.route('/apply-coupon').post(protect, applyCouponToCart);
-router.route('/remove-coupon').delete(protect, removeCouponFromCart);
-router.route('/clear').delete(protect, clearCart);
+router.route('/apply-coupon').post(protect, asyncHandler(applyCouponToCart));
+router.route('/remove-coupon').delete(protect, asyncHandler(removeCouponFromCart));
+router.route('/clear').delete(protect, asyncHandler(clearCart));
 
 module.exports = router;

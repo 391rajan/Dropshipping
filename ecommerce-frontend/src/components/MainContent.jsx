@@ -3,11 +3,7 @@ import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import HeroSection from "../components/HeroSection";
 import ProductCard from "../components/ProductCard";
-
-
-// Fetch products from backend API
-
-
+import { productAPI } from "../services/api";
 
 function Home() {
   const [products, setProducts] = useState([]);
@@ -17,12 +13,11 @@ function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/products");
-        if (!res.ok) throw new Error("Failed to fetch products");
-        const data = await res.json();
+        const data = await productAPI.getAll();
         setProducts(data);
       } catch (err) {
-        setError(err.message);
+        setError("Failed to fetch products.");
+        console.error("Error fetching products:", err);
       } finally {
         setLoading(false);
       }
@@ -86,7 +81,8 @@ function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
             {offers.map((product) => (
               <ProductCard key={product._id} product={product} />
-            ))}
+            ))
+          }
           </div>
         </section>
       )}

@@ -1,24 +1,26 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState({ items: [], subtotal: 0, discount: 0, total: 0, appliedCoupon: null });
   const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
 
   // Fetch cart on initial load
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [token]);
 
   const fetchCart = async () => {
+    if (!token) {
+      setCart({ items: [], subtotal: 0, discount: 0, total: 0, appliedCoupon: null });
+      setLoading(false);
+      return; // No token, no cart to fetch
+    }
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setLoading(false);
-        return; // No token, no cart to fetch
-      }
       const response = await axios.get('http://localhost:5000/api/cart', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -32,12 +34,11 @@ export const CartProvider = ({ children }) => {
   };
 
   const addToCart = async (product, quantity = 1) => {
+    if (!token) {
+      alert('Please log in to add items to your cart.');
+      return false;
+    }
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Please log in to add items to your cart.');
-        return false;
-      }
       const response = await axios.post(`http://localhost:5000/api/cart`,
         { productId: product._id, quantity },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -52,9 +53,8 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = async (productId) => {
+    if (!token) return false;
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return false;
       const response = await axios.delete(`http://localhost:5000/api/cart/${productId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -68,9 +68,8 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = async (productId, quantity) => {
+    if (!token) return false;
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return false;
       const response = await axios.put(`http://localhost:5000/api/cart/${productId}`,
         { quantity },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -85,9 +84,8 @@ export const CartProvider = ({ children }) => {
   };
 
   const clearCart = async () => {
+    if (!token) return false;
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return false;
       const response = await axios.delete('http://localhost:5000/api/cart/clear', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -101,12 +99,11 @@ export const CartProvider = ({ children }) => {
   };
 
   const applyCoupon = async (couponCode) => {
+    if (!token) {
+      alert('Please log in to apply coupons.');
+      return false;
+    }
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Please log in to apply coupons.');
-        return false;
-      }
       const response = await axios.post('http://localhost:5000/api/cart/apply-coupon', 
         { couponCode },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -122,9 +119,8 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeCoupon = async () => {
+    if (!token) return false;
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return false;
       const response = await axios.delete('http://localhost:5000/api/cart/remove-coupon', {
         headers: { Authorization: `Bearer ${token}` }
       });

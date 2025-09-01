@@ -3,8 +3,9 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ShoppingCart, Heart, Share2, ChevronRight, ChevronLeft, Truck, RefreshCw, Shield } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { productAPI } from '../services/api';
+import { productAPI, stockNotificationAPI } from '../services/api';
 import ProductReviews from '../components/ProductReviews';
+import ProductQuestions from '../components/ProductQuestions';
 import RecentlyViewed from '../components/RecentlyViewed';
 
 const ProductDetails = () => {
@@ -17,8 +18,19 @@ const ProductDetails = () => {
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [notificationEmail, setNotificationEmail] = useState('');
 
-  // Function to handle image paths
+  const handleRequestStockNotification = async (e) => {
+    e.preventDefault();
+    try {
+      await stockNotificationAPI.create({ productId: id, email: notificationEmail });
+      alert('You will be notified when the product is back in stock.');
+    } catch (error) {
+      console.error('Error requesting stock notification:', error);
+      alert(error.response.data.message);
+    }
+  };
+  
   const getImageUrl = (imagePath) => {
     if (imagePath) {
       if (imagePath.startsWith('http')) {
@@ -244,7 +256,24 @@ const ProductDetails = () => {
                 {!product.outOfStock ? 'Add to Cart' : 'Out of Stock'}
               </button>
               
-              <div className="grid grid-cols-2 gap-3">
+              {product.outOfStock && (
+                <form onSubmit={handleRequestStockNotification} className="flex flex-col gap-3">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={notificationEmail}
+                    onChange={(e) => setNotificationEmail(e.target.value)}
+                    required
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full flex items-center justify-center gap-2 bg-gray-600 text-white py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    Notify Me When Available
+                  </button>
+                </form>
+              )}
                 <button
                   onClick={handleAddToWishlist}
                   className="flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50"
@@ -271,7 +300,10 @@ const ProductDetails = () => {
               </div>
             </div>
           </div>
+        </div>
+      
 
+      <div>
           {/* Features */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t">
             <div className="flex items-center gap-3">
@@ -323,18 +355,21 @@ const ProductDetails = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
       {/* Product Reviews */}
       <div className="mt-12">
         <ProductReviews productId={id} />
       </div>
 
-      {/* Recently Viewed Products */}
+      {/* Customer Questions & Answers */}
+      <div className="mt-12">
+        <ProductQuestions productId={id} />
+      </div>
+      
       <div className="mt-12">
         <RecentlyViewed />
       </div>
+    </div>
     </div>
   );
 };

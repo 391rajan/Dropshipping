@@ -355,6 +355,23 @@ const products = [
   }
 ];
 
+const productToCategoryMap = {
+  'iPhone 15 Pro': 'electronics',
+  'MacBook Air M2': 'electronics',
+  'Sony WH-1000XM5': 'electronics',
+  'Samsung Galaxy S24': 'electronics',
+  'Dell XPS 15': 'electronics',
+  'Premium Cotton T-Shirt': 'clothing',
+  'Slim Fit Jeans': 'clothing',
+  'Casual Blazer': 'clothing',
+  'Nike Air Max 270': 'footwear',
+  'Adidas Ultraboost 22': 'footwear',
+  'Smart LED Desk Lamp': 'home & garden',
+  'Stainless Steel Coffee Maker': 'home & garden',
+  'Premium Yoga Mat': 'sports & fitness',
+  'Adjustable Dumbbells Set': 'sports & fitness',
+};
+
 mongoose.connect(config.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -380,26 +397,20 @@ mongoose.connect(config.MONGO_URI, {
     // Create products with proper category references
     for (const product of products) {
       // Map category names to IDs
+      const categoryName = productToCategoryMap[product.name];
       let categoryId;
-      if (product.name.includes('iPhone') || product.name.includes('MacBook') || product.name.includes('iPad')) {
-        categoryId = categoryMap['electronics'];
-      } else if (product.name.includes('T-Shirt') || product.name.includes('Jeans') || product.name.includes('Blazer')) {
-        categoryId = categoryMap['clothing'];
-      } else if (product.name.includes('Nike') || product.name.includes('Adidas')) {
-        categoryId = categoryMap['footwear'];
-      } else if (product.name.includes('Lamp') || product.name.includes('Coffee Maker')) {
-        categoryId = categoryMap['home & garden'];
-      } else if (product.name.includes('Yoga') || product.name.includes('Dumbbells')) {
-        categoryId = categoryMap['sports & fitness'];
+      if (categoryName && categoryMap[categoryName.toLowerCase()]) {
+        categoryId = categoryMap[categoryName.toLowerCase()];
       } else {
-        categoryId = categoryMap['electronics']; // Default fallback
+        console.warn(`Category not found for product "${product.name}". Check mapping or category seeder. Skipping product.`);
+        continue; // Skip product if category is not found
       }
       
       product.category = categoryId;
       
       const newProduct = new Product(product);
       await newProduct.save();
-      console.log(`Created product: ${product.name} in category: ${product.category}`);
+      console.log(`Created product: ${product.name} in category: ${categoryName} (${product.category})`);
     }
     
     console.log('Products seeded successfully!');

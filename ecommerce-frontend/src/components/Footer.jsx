@@ -1,8 +1,24 @@
+import { useState } from "react";
 import { Facebook, Instagram, Twitter } from "lucide-react";
 import { Link } from "react-router-dom"; // Import Link for internal routing
+import { subscribeToNewsletter } from '../services/api';
 
 function Footer() {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState('');
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await subscribeToNewsletter({ email });
+      alert(res.message);
+      setEmail('');
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+
+
 
   return (
   <footer className="bg-accent text-background py-12 mt-16 md:mt-24"> {/* Modern accent background, more vertical padding */}
@@ -43,7 +59,29 @@ function Footer() {
           </ul>
         </div>
 
-        {/* 4. Contact Info & Social */}
+        {/* 4. Newsletter Signup */}
+        <div>
+          <h4 className="font-bold text-lg mb-4 text-white">Stay Updated</h4>
+          <p className="text-sm mb-4">Subscribe to our newsletter for the latest updates and offers.</p>
+          <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
+            <input
+              type="email"
+              placeholder="Your email address"
+              className="p-2 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Subscribe
+            </button>
+          </form>
+        </div>
+
+        {/* 5. Contact Info & Social */}
         <div>
           <h4 className="font-bold text-lg mb-4 text-white">Get in Touch</h4> {/* More engaging heading */}
           <div className="space-y-2 text-sm">

@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Category = require('./models/Category');
-const slugify = require('slugify');
 const config = require('./config');
 
 const categories = [
@@ -152,10 +151,14 @@ mongoose.connect(config.MONGO_URI, {
     // Create subcategories
     for (const subcategory of subcategories) {
       if (createdCategories[subcategory.parent]) {
-        subcategory.parent = createdCategories[subcategory.parent];
-        const newSubcategory = new Category(subcategory);
+        // Create a new object to avoid modifying the original array
+        const newSubcategoryData = { ...subcategory, parent: createdCategories[subcategory.parent] };
+        const newSubcategory = new Category(newSubcategoryData);
         await newSubcategory.save();
-        console.log(`Created subcategory: ${subcategory.name} under ${subcategory.parent}`);
+        // Log the original parent name for clarity
+        console.log(`Created subcategory: ${subcategory.name} under parent: ${subcategory.parent}`);
+      } else {
+        console.warn(`Parent category "${subcategory.parent}" not found for subcategory "${subcategory.name}". Skipping.`);
       }
     }
     

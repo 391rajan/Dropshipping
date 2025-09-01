@@ -6,7 +6,6 @@ import ProductCard from '../components/ProductCard';
 import { ChevronDown, ListFilter } from 'lucide-react';
 
 const Shop = () => {
-  const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,68 +24,48 @@ const Shop = () => {
   });
 
   useEffect(() => {
-    const fetchInitialData = async () => {
+    const fetchCategories = async () => {
       try {
-        setLoading(true);
-        const [productsData, categoriesData] = await Promise.all([
-          productAPI.getAll(),
-          categoryAPI.getAll(),
-        ]);
-        setProducts(productsData);
+        const categoriesData = await categoryAPI.getAll();
         setCategories(categoriesData);
+      } catch (err) {
+        setError('Failed to load categories.');
+        console.error(err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const apiFilters = {
+          search: filters.search || undefined,
+          category: filters.category === 'all' ? undefined : filters.category,
+          sortBy: filters.sort === 'newest' ? undefined : filters.sort,
+        };
+
+        if (filters.price !== 'all') {
+          const [min, max] = filters.price.split('-').map(Number);
+          apiFilters.minPrice = min;
+          if (max) {
+            apiFilters.maxPrice = max;
+          }
+        }
+
+        const productsData = await productAPI.getAll(apiFilters);
+        setFilteredProducts(productsData);
         setError(null);
       } catch (err) {
-        setError('Failed to load data. Please try again later.');
+        setError('Failed to load products. Please try again later.');
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
-    fetchInitialData();
-  }, []);
 
-  useEffect(() => {
-    let tempProducts = [...products];
-
-    // Filter by search term
-    if (filters.search) {
-      tempProducts = tempProducts.filter(p =>
-        p.name.toLowerCase().includes(filters.search.toLowerCase())
-      );
-    }
-
-    // Filter by category
-    if (filters.category !== 'all') {
-      tempProducts = tempProducts.filter(p => p.category?._id === filters.category);
-    }
-
-    // Filter by price
-    if (filters.price !== 'all') {
-      const [min, max] = filters.price.split('-').map(Number);
-      tempProducts = tempProducts.filter(p => p.price >= min && (max ? p.price <= max : true));
-    }
-
-    // Sort products
-    switch (filters.sort) {
-      case 'price-asc':
-        tempProducts.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        tempProducts.sort((a, b) => b.price - a.price);
-        break;
-      case 'name-asc':
-        tempProducts.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'name-desc':
-        tempProducts.sort((a, b) => b.name.localeCompare(a.name));
-        break;
-      case 'newest':
-      default:
-        tempProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        break;
-    }
-
-    setFilteredProducts(tempProducts);
+    fetchProducts();
 
     // Update URL
     const params = new URLSearchParams();
@@ -96,7 +75,7 @@ const Shop = () => {
     if (filters.search) params.set('search', filters.search);
     navigate(`${location.pathname}?${params.toString()}`, { replace: true });
 
-  }, [filters, products, navigate, location.pathname]);
+  }, [filters, navigate, location.pathname]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -235,9 +214,7 @@ const Shop = () => {
         <main className="flex-1">
           {/* Sorting and Results Count */}
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b">
-            <p className="text-gray-600 mb-2 sm:mb-0">
-              Showing <span className="font-semibold">{filteredProducts.length}</span> of <span className="font-semibold">{products.length}</span> products
-            </p>
+            <p className="text-gray-600 mb-2 sm:mb-0">Showing <span className="font-semibold">{filteredProducts.length}</span> products</p>
             <div className="flex items-center gap-2">
               <label htmlFor="sort" className="text-gray-600">Sort by:</label>
               <select

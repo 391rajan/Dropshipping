@@ -1,35 +1,45 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from './AuthContext';
 
 const CompareContext = createContext();
 
 export const CompareProvider = ({ children }) => {
   const [compareItems, setCompareItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
 
   useEffect(() => {
     fetchCompareList();
-  }, []);
+  }, [token]);
 
   const fetchCompareList = async () => {
+    if (!token) {
+      setCompareItems([]);
+      setLoading(false);
+      return;
+    }
     try {
       const response = await axios.get('http://localhost:5000/api/compare', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setCompareItems(response.data);
+      // Ensure response.data is an array before setting the compareItems
+      setCompareItems(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error fetching compare list:', error);
+      setCompareItems([]);
     } finally {
       setLoading(false);
     }
   };
 
   const addToCompare = async (productId) => {
+    if (!token) return false;
     try {
       const response = await axios.post(`http://localhost:5000/api/compare/add/${productId}`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setCompareItems(response.data);
+      setCompareItems(Array.isArray(response.data) ? response.data : []);
       return true;
     } catch (error) {
       console.error('Error adding to compare:', error);
@@ -38,11 +48,12 @@ export const CompareProvider = ({ children }) => {
   };
 
   const removeFromCompare = async (productId) => {
+    if (!token) return false;
     try {
       const response = await axios.delete(`http://localhost:5000/api/compare/remove/${productId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setCompareItems(response.data);
+      setCompareItems(Array.isArray(response.data) ? response.data : []);
       return true;
     } catch (error) {
       console.error('Error removing from compare:', error);
@@ -51,11 +62,12 @@ export const CompareProvider = ({ children }) => {
   };
 
   const clearCompareList = async () => {
+    if (!token) return false;
     try {
       await axios.delete('http://localhost:5000/api/compare/clear', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setCompareItems([]);
+      setCompareItems(Array.isArray(response.data) ? response.data : []);
       return true;
     } catch (error) {
       console.error('Error clearing compare list:', error);

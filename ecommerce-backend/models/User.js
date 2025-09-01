@@ -12,7 +12,11 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: false, // Changed to false
+  },
+  googleId: {
+    type: String,
+    required: false, // Added googleId field
   },
   isAdmin: {
     type: Boolean,
@@ -21,8 +25,9 @@ const userSchema = new mongoose.Schema({
   },
   passwordResetToken: String,
   passwordResetExpires: Date,
-  isVerified: { type: Boolean, default: false },
-  verificationToken: String,
-
+  isVerified: { type: Boolean, default: true },
+}, {
+  timestamps: true // Automatically adds createdAt and updatedAt
+});
 
 module.exports = mongoose.model("User", userSchema);
