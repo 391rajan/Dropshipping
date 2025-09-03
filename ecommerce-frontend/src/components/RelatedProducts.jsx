@@ -29,7 +29,7 @@ function RelatedProducts({ products, currentProductId }) {
             <div key={product._id} className="group relative">
               <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg">
                 <img
-                  src={product.image}
+                  src={product.images?.[0] ? `http://localhost:5000/${product.images[0]}` : 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=600&fit=crop'}
                   alt={product.name}
                   className="h-full w-full object-cover object-center group-hover:opacity-75 transition-opacity"
                   onClick={() => navigate(`/product/${product._id}`)}

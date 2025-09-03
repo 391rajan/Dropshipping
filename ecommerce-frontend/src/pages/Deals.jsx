@@ -77,7 +77,7 @@ function Deals() {
             <Link to={`/product/${product._id}`} className="block">
               <div className="relative">
                 <img
-                  src={getImageUrl(product.image)}
+                  src={getImageUrl(product.images?.[0])}
                   alt={product.name}
                   className="w-full h-56 object-cover"
                 />

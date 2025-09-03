@@ -22,36 +22,22 @@ function ProductCard({ product }) {
     }).format(price);
   };
 
-  // Get the first image from the images array, or use a fallback
-  const getProductImage = () => {
-    const imagePath = product.images?.[0] || product.image;
-    if (imagePath) {
-      // Handle both uploaded images and custom images
-      if (imagePath.startsWith('http')) {
-        return imagePath;
-      } else if (imagePath.startsWith('uploads/')) {
-        return `http://localhost:5000/${imagePath}`;
-      } else if (imagePath.startsWith('custom-images/')) {
-        return `http://localhost:5000/${imagePath}`;
-      } else {
-        return `http://localhost:5000/uploads/${imagePath}`;
-      }
-    }
-    // Fallback image if no images are available
-    return 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=600&fit=crop';
-  };
+// ecommerce-frontend/src/components/ProductCard.jsx
 
+const getProductImage = () => {
+  if (product.images && product.images.length > 0) {
+    const imageUrl = `http://localhost:5000/${product.images[0]}`;
+    return imageUrl;
+  }
+  return 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=600&fit=crop';
+};
   return (
     <div className="group bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-accent transform hover:-translate-y-1 w-full">
-      <Link to={`/product/${product._id}`} className="block relative overflow-hidden aspect-w-4 aspect-h-3">
+      <Link to={`/product/${product._id}`} className="block relative overflow-hidden aspect-[4/3]">
         <img
           src={getProductImage()}
           alt={product.name}
           className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-          onError={(e) => {
-            // Fallback if image fails to load
-            e.target.src = 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=600&fit=crop';
-          }}
         />
         {product.outOfStock && (
           <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">

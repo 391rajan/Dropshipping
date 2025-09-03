@@ -238,7 +238,7 @@ const Shop = () => {
                 <ProductCard
                   key={product._id}
                   product={product}
-                  imageUrl={getImageUrl(product.image)}
+                  
                 />
               ))}
             </div>

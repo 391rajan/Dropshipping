@@ -11,8 +11,8 @@ const products = [
     price: 999.99,
     originalPrice: 1099.99,
     images: [
-      'uploads/iphone15_pro_1.jpg',
-      'uploads/iphone15_pro_2.jpg'
+      'uploads/iphone15.jpg',
+      'uploads/iphone15_1.jpg'
     ],
     brand: 'Apple',
     stock: 50,

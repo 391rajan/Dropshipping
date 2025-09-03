@@ -4,7 +4,14 @@ const RecentlyViewed = require('../models/RecentlyViewed');
 
 // Create a new product
 exports.createProduct = async (req, res) => {
-  const product = new Product(req.body);
+  const { images, ...productData } = req.body;
+
+  const newProduct = {
+    ...productData,
+    images: Array.isArray(images) ? images : [],
+  };
+
+  const product = new Product(newProduct);
   await product.save();
   res.status(201).json(product);
 };
@@ -69,7 +76,14 @@ exports.getProductById = async (req, res) => {
 
 // Update a product by ID
 exports.updateProduct = async (req, res) => {
-  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+  const { images, ...productData } = req.body;
+
+  const updatedProductData = {
+    ...productData,
+    images: Array.isArray(images) ? images : [],
+  };
+
+  const product = await Product.findByIdAndUpdate(req.params.id, updatedProductData, {
     new: true,
     runValidators: true,
   });
