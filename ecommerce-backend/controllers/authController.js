@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs"); // FIX: require the module
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken"); // ADD: import jsonwebtoken
 const sendEmail = require("../utils/sendEmail"); // ADD: assuming email utility exists here
+const { validationResult } = require('express-validator');
 
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
@@ -71,6 +72,11 @@ exports.resetPassword = async (req, res) => {
 };
 
 exports.signup = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { name, email, password } = req.body;
   let user = await User.findOne({ email });
   if (user) {

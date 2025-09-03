@@ -14,6 +14,7 @@ const {
   getProfile,
 } = require("../controllers/authController");
 const { protect, admin } = require('../middleware/auth');
+const { body } = require('express-validator');
 
 const passport = require('passport');
 
@@ -30,7 +31,11 @@ router.get(
 );
 
 
-router.post("/signup", asyncHandler(signup));
+router.post("/signup", [
+    body('name', 'Name is required').not().isEmpty(),
+    body('email', 'Please include a valid email').isEmail(),
+    body('password', 'Password must be 6 or more characters').isLength({ min: 6 })
+  ], asyncHandler(signup));
 router.post("/login", asyncHandler(login));
 router.post("/forgot-password", asyncHandler(forgotPassword));
 router.post("/reset-password/:token", asyncHandler(resetPassword));
