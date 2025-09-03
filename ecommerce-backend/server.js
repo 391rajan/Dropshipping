@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from the 'public' directory.
 // This means a request to '/uploads/image.jpg' will serve the file from 'public/uploads/image.jpg'.
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API Routes
 app.use("/api/cart", require("./routes/cartRoutes"));
