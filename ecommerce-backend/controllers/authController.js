@@ -124,6 +124,22 @@ exports.login = async (req, res) => {
   res.status(200).json({ token });
 };
 
+// @desc    Handle Google OAuth callback
+// @route   GET /api/auth/google/callback
+// @access  Public
+exports.googleCallback = (req, res) => {
+  // Successful authentication, user object is attached to req.user by Passport
+  // Generate JWT
+  const token = jwt.sign(
+    { id: req.user._id, isAdmin: req.user.isAdmin },
+    process.env.JWT_SECRET,
+    { expiresIn: '1d' }
+  );
+
+  // Redirect to frontend with the token
+  res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
+};
+
 // @desc    Get user profile
 // @route   GET /api/auth/profile
 // @access  Private

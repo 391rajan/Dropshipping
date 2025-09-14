@@ -70,7 +70,7 @@ function ShopAll() {
   // Initial fetch and on filter change
   useEffect(() => {
     fetchProducts(debouncedFilters);
-  }, [debouncedFilters, fetchProducts]);
+  }, [JSON.stringify(debouncedFilters), fetchProducts]);
 
   useEffect(() => {
     fetchCategories();

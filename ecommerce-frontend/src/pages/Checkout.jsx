@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import axios from 'axios';
+import axiosInstance from '../services/api';
 import CheckoutForm from '../components/CheckoutForm'; // Import the new component
 
 const Checkout = () => {
@@ -17,9 +17,7 @@ const Checkout = () => {
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/address', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await axiosInstance.get('/address');
         setAddresses(response.data);
         if (response.data.length > 0) {
           setSelectedAddress(response.data[0]._id);
@@ -37,10 +35,8 @@ const Checkout = () => {
       if (cart.total > 0 && selectedAddress && paymentMethod === 'card') {
         setLoading(true);
         try {
-          const response = await axios.post('http://localhost:5000/api/payments/create-payment-intent', {
+          const response = await axiosInstance.post('/payments/create-payment-intent', {
             amount: Math.round(cart.total * 100), // Amount in cents
-          }, {
-            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
           });
           setClientSecret(response.data.clientSecret);
           setPaymentError(null); // Clear previous errors
@@ -78,9 +74,7 @@ const Checkout = () => {
         paymentResult: paymentIntentId ? { id: paymentIntentId, status: 'succeeded' } : undefined,
       };
 
-      const response = await axios.post('http://localhost:5000/api/orders', orderData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await axiosInstance.post('/orders', orderData);
 
       if (response.data) {
         clearCart();

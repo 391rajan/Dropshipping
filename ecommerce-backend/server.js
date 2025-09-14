@@ -14,25 +14,26 @@ const app = express();
 // Set security HTTP headers
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 
+// CORS Configuration
+const corsOptions = {
+  // Replace with your frontend's URL in production.
+  // It's good practice to use an environment variable for this.
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Default for Vite dev server, change to 3000 for CRA
+  credentials: true,
+  optionsSuccessStatus: 200 // For legacy browser support
+};
+app.use(cors(corsOptions));
+
 // Rate limiting to prevent brute-force attacks
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per window
+  max: 1000, // Increased limit
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 // Apply the rate limiting middleware to all requests
 app.use(limiter);
-
-// CORS Configuration
-const corsOptions = {
-  // Replace with your frontend's URL in production.
-  // It's good practice to use an environment variable for this.
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Default for Vite dev server, change to 3000 for CRA
-  optionsSuccessStatus: 200 // For legacy browser support
-};
-app.use(cors(corsOptions));
 
 // Passport middleware
 const passport = require('passport');
@@ -62,6 +63,7 @@ app.use('/api/questions', require('./routes/questionRoutes'));
 app.use('/api/compare', require('./routes/compareRoutes'));
 app.use('/api/newsletter', require('./routes/newsletterRoutes'));
 app.use('/api/stock-notifications', require('./routes/stockNotificationRoutes'));
+app.use('/api/reviews', require('./routes/reviewRoutes'));
 
 // Global Error Handler - MUST be the last middleware
 app.use((err, req, res, next) => {

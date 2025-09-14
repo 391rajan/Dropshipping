@@ -80,6 +80,11 @@ export const productAPI = {
     const response = await api.get('/products/count');
     return response.data;
   },
+
+  addToRecentlyViewed: async (productId) => {
+    const response = await api.post(`/recently-viewed/${productId}`);
+    return response.data;
+  },
 };
 
 export const categoryAPI = {
@@ -109,7 +114,7 @@ export const categoryAPI = {
 // Review APIs
 export const reviewAPI = {
   getProductReviews: async (productId) => {
-    const response = await api.get(`/reviews/product/${productId}`);
+    const response = await api.get(`/reviews/${productId}`);
     return response.data;
   },
 

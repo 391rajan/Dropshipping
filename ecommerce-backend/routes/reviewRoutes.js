@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 const { protect } = require('../middleware/auth');
 
 // Get reviews for a product
-router.get('/product/:productId', async (req, res) => {
+router.get('/:productId', async (req, res) => {
   try {
     const reviews = await Review.find({ product: req.params.productId })
       .populate('user', 'name')

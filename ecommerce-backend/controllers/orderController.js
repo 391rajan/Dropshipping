@@ -3,6 +3,7 @@ const sendEmail = require('../utils/sendEmail');
 const mongoose = require('mongoose');
 const Cart = require('../models/Cart');
 const Address = require('../models/Address');
+const Product = require('../models/Product'); // Assuming you have a Product model
 
 // Helper function for sending order confirmation email
 const sendOrderConfirmationEmail = async (user, order) => {
@@ -13,7 +14,7 @@ const sendOrderConfirmationEmail = async (user, order) => {
   // Note: Ensure orderItems have product name and price available.
   // If not, you may need to populate them before calling this function.
   const orderItemsHtml = orderItems.map(item => `
-    <li>${item.quantity} x ${item.product.name} - ${item.price}</li>
+    <li>${item.quantity} x ${item.name} - ${item.price}</li>
   `).join('');
 
   const orderIdShort = _id.toString().substring(0, 7);
@@ -23,7 +24,7 @@ const sendOrderConfirmationEmail = async (user, order) => {
 Thank you for your order! Your order ID is ${orderIdShort}. Total: ${totalPrice}.
 
 Items:
-${orderItems.map(item => `${item.quantity} x ${item.product.name}`).join('\n')}
+${orderItems.map(item => `${item.quantity} x ${item.name}`).join('\n')}
 
 Status: ${status}
 
@@ -78,13 +79,33 @@ exports.createOrder = async (req, res) => {
       return res.status(404).json({ message: 'Shipping address not found' });
   }
 
+  // Create a snapshot of order items with price and details at the time of purchase
+  const orderItems = await Promise.all(items.map(async (item) => {
+    const product = await Product.findById(item.product);
+    if (!product) {
+      // This throws an error that should be caught by a global error handler
+      throw new Error(`Product with ID ${item.product} not found`);
+    }
+    return {
+      name: product.name,
+      image: product.image,
+      price: product.price, // Use the current price from the database
+      quantity: item.quantity,
+      product: item.product, // The original product ID
+    };
+  }));
+
+  // You might want to recalculate the total price on the backend for security
+  // instead of trusting the value from the client.
+  // const calculatedTotalPrice = orderItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
+
   const order = new Order({
     user: req.user._id,
-    orderItems: items,
+    orderItems: orderItems,
     shippingAddress: fullShippingAddress._id, // Store the ID
     paymentMethod,
     paymentResult,
-    totalPrice,
+    totalPrice, // Or use calculatedTotalPrice
   });
 
   const createdOrder = await order.save();

@@ -50,10 +50,7 @@ const ProductDetails = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const [productData] = await Promise.all([
-          productAPI.getById(id),
-          productAPI.addToRecentlyViewed(id)
-        ]);
+        const productData = await productAPI.getById(id);
         
         // Process images
         if (productData.images) {
@@ -62,6 +59,15 @@ const ProductDetails = () => {
         
         setProduct(productData);
         setError(null);
+
+        // Non-critical call, attempt to add to recently viewed but don't block UI
+        try {
+          await productAPI.addToRecentlyViewed(id);
+        } catch (recentError) {
+          // Ignore errors (e.g., 401 for non-logged-in users)
+          console.log('Could not add to recently viewed:', recentError.message);
+        }
+
       } catch (error) {
         setError('Failed to fetch product details');
         console.error('Error fetching product:', error);

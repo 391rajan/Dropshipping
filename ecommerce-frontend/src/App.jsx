@@ -27,6 +27,7 @@ import CategoryPage from "./pages/CategoryPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import AuthCallback from "./pages/AuthCallback"; // Import the new component
 import EmailVerification from "./pages/EmailVerification";
 
 // Component to conditionally render layout
@@ -34,7 +35,12 @@ function AppRoutes() {
   const location = useLocation();
 
   // Hide layout on login and signup routes
-  const hideLayout = location.pathname === "/login" || location.pathname === "/signup";
+  const hideLayout =
+    location.pathname === "/login" ||
+    location.pathname === "/signup" ||
+    location.pathname === "/forgot-password" ||
+    location.pathname.startsWith("/reset-password") ||
+    location.pathname === "/auth/callback"; // Hide layout on callback
 
   return (
   <div className="maincontainer bg-background min-h-screen flex flex-col">
@@ -48,6 +54,7 @@ function AppRoutes() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/verify-email/:token" element={<EmailVerification />} />
           <Route path="/shop" element={<ShopAll />} />
           <Route path="/offers" element={<Deals />} />

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { authAPI } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../services/api";
 
 function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -20,7 +20,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const data = await authAPI.login(formData);
+      const { data } = await axiosInstance.post("/auth/login", formData);
       login(data.token);
       navigate("/");
     } catch (error) {
@@ -86,14 +86,15 @@ function Login() {
 
         <div className="text-center my-4">
           <a
-            href="http://localhost:5000/api/auth/google"
-            className="w-full flex items-center justify-center bg-red-600 text-white py-2 rounded-md hover:bg-red-700 transition"
+            href={`${import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/google`}
+            className="w-full flex items-center justify-center bg-white border border-gray-300 text-gray-700 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-gray-100"
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 48 48">
-              <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
-              <path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
-              <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
-              <path fill="#1976D2" d="M43.611 20.083H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.012 35.237 44 30.022 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+              <path fill="#4285F4" d="M24 9.5c3.9 0 6.9 1.6 9.1 3.7l6.9-6.9C35.2 2.5 30.1 0 24 0 14.9 0 7.3 5.4 4.1 12.9l8.2 6.3C14.2 13.4 18.6 9.5 24 9.5z"></path>
+              <path fill="#34A853" d="M46.2 25.4c0-1.7-.2-3.4-.5-5H24v9.5h12.5c-.5 3.1-2.1 5.7-4.6 7.5l7.8 6C43.4 39.6 46.2 33.1 46.2 25.4z"></path>
+              <path fill="#FBBC05" d="M12.3 19.2c-.4-1.2-.6-2.5-.6-3.8s.2-2.6.6-3.8l-8.2-6.3C1.5 8.9 0 13.2 0 18s1.5 9.1 4.1 12.9l8.2-6.3z"></path>
+              <path fill="#EA4335" d="M24 48c6.1 0 11.2-2 14.9-5.4l-7.8-6c-2.5 1.7-5.6 2.7-9.1 2.7-5.4 0-9.8-3.9-11.7-9.2l-8.2 6.3C7.3 42.6 14.9 48 24 48z"></path>
+              <path fill="none" d="M0 0h48v48H0z"></path>
             </svg>
             Sign in with Google
           </a>
