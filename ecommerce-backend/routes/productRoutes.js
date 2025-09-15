@@ -4,6 +4,7 @@ const asyncHandler = require('express-async-handler');
 const productController = require('../controllers/productController');
 const { protect, admin } = require('../middleware/auth');
 
+router.get('/deals', asyncHandler(productController.getDealProducts));
 // Public routes - specific routes must come before dynamic routes like /:id
 router.get('/search/suggestions', asyncHandler(productController.getSearchSuggestions));
 

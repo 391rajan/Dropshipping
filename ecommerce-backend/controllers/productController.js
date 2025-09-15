@@ -64,6 +64,13 @@ exports.getProducts = async (req, res) => {
   res.json(productsWithStockStatus);
 };
 
+// Get all products that are on deal
+exports.getDealProducts = async (req, res) => {
+  const products = await Product.find({ originalPrice: { $ne: null } })
+    .populate('category', 'name');
+  res.json(products);
+};
+
 // Get a single product by ID
 exports.getProductById = async (req, res) => {
   const product = await Product.findById(req.params.id).populate('category');

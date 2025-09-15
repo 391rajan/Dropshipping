@@ -37,6 +37,10 @@ export const authAPI = {
 
 // Product APIs
 export const productAPI = {
+  getDeals: async () => {
+    const response = await api.get('/products/deals');
+    return response.data;
+  },
   getAll: async (filters = {}) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
@@ -242,6 +246,10 @@ export const cartAPI = {
 
 // Order APIs
 export const orderAPI = {
+  getById: async (id) => {
+    const response = await api.get(`/orders/${id}`);
+    return response.data;
+  },
   getMyOrders: async () => {
     const response = await api.get('/orders/my-orders');
     return response.data;

@@ -29,15 +29,11 @@ function Deals() {
     const fetchDeals = async () => {
       try {
         setLoading(true);
-        // In a real app, you'd have a dedicated API endpoint for deals.
-        // Here, we'll fetch all products and simulate deals.
-        const allProducts = await productAPI.getAll({ limit: 8 }); // Fetch a limited number of products
+        const dealProducts = await productAPI.getDeals();
         
-        // Simulate discounted prices for demonstration
-        const dealsWithDiscounts = allProducts.map(product => ({
+        const dealsWithDiscounts = dealProducts.map(product => ({
           ...product,
-          originalPrice: product.price * 1.25, // Simulate a 20% discount
-          discount: 20,
+          discount: Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100),
         }));
 
         setDeals(dealsWithDiscounts);
