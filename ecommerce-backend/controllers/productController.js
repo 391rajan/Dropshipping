@@ -160,3 +160,37 @@ exports.addToRecentlyViewed = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
+// @desc    Get search suggestions
+// @route   GET /api/products/search/suggestions
+// @access  Public
+exports.getSearchSuggestions = async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.json([]);
+  }
+
+  const products = await Product.find({
+    name: { $regex: query, $options: 'i' },
+  }).limit(5);
+
+  res.json(products.map(p => p.name));
+};
+
+// @desc    Search products
+// @route   GET /api/products/search
+// @access  Public
+exports.searchProducts = async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.json([]);
+  }
+
+  const products = await Product.find({
+    $text: { $search: query },
+  });
+
+  res.json(products);
+};

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tab } from '@headlessui/react';
 import { MapPin, Package, CreditCard, User, Bell } from 'lucide-react';
-import { orderAPI } from '../services/api';
+import { orderAPI, userAPI } from '../services/api';
 import AddressManagement from '../components/AddressManagement';
 import { useAuth } from '../context/AuthContext';
 
@@ -14,6 +14,47 @@ function Profile() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [name, setName] = useState(user.name);
+  const [email, setEmail] = useState(user.email);
+  const [phone, setPhone] = useState(user.phone || '');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [updateError, setUpdateError] = useState(null);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [notificationPreferences, setNotificationPreferences] = useState({
+    orderUpdates: true,
+    promotionalEmails: true,
+    newProductArrivals: true,
+    priceDropAlerts: false,
+  });
+
+  const handleNotificationChange = (e) => {
+    const { name, checked } = e.target;
+    setNotificationPreferences((prev) => ({ ...prev, [name]: checked }));
+  };
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    setUpdateError(null);
+    setUpdateSuccess(false);
+
+    if (password && password !== confirmPassword) {
+      setUpdateError('Passwords do not match');
+      return;
+    }
+
+    try {
+      const updatedUser = await userAPI.updateProfile({
+        name,
+        email,
+        phone,
+        password: password || undefined,
+      });
+      setUpdateSuccess(true);
+    } catch (err) {
+      setUpdateError(err.response?.data?.message || 'Failed to update profile');
+    }
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -160,13 +201,16 @@ function Profile() {
               <Tab.Panel>
                 <div className="bg-white rounded-lg shadow p-6 border border-accent/10">
                   <h3 className="text-primary font-semibold mb-4">Personal Information</h3>
-                  <form className="space-y-4">
+                  <form className="space-y-4" onSubmit={handleProfileUpdate}>
+                    {updateError && <p className="text-red-500">{updateError}</p>}
+                    {updateSuccess && <p className="text-green-500">Profile updated successfully!</p>}
                     <div>
                       <label className="block text-accent text-sm mb-1">Full Name</label>
                       <input
                         type="text"
                         className="w-full px-4 py-2 rounded-lg border border-accent/20 focus:outline-none focus:ring-2 focus:ring-primary"
-                        defaultValue={user.name}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                       />
                     </div>
                     <div>
@@ -174,7 +218,8 @@ function Profile() {
                       <input
                         type="email"
                         className="w-full px-4 py-2 rounded-lg border border-accent/20 focus:outline-none focus:ring-2 focus:ring-primary"
-                        defaultValue={user.email}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
                     <div>
@@ -182,7 +227,26 @@ function Profile() {
                       <input
                         type="tel"
                         className="w-full px-4 py-2 rounded-lg border border-accent/20 focus:outline-none focus:ring-2 focus:ring-primary"
-                        defaultValue={user.phone || 'N/A'}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-accent text-sm mb-1">New Password</label>
+                      <input
+                        type="password"
+                        className="w-full px-4 py-2 rounded-lg border border-accent/20 focus:outline-none focus:ring-2 focus:ring-primary"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-accent text-sm mb-1">Confirm New Password</label>
+                      <input
+                        type="password"
+                        className="w-full px-4 py-2 rounded-lg border border-accent/20 focus:outline-none focus:ring-2 focus:ring-primary"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                       />
                     </div>
                     <button
@@ -201,19 +265,19 @@ function Profile() {
                   <h3 className="text-primary font-semibold mb-4">Notification Preferences</h3>
                   <div className="space-y-4">
                     <label className="flex items-center space-x-3">
-                      <input type="checkbox" className="form-checkbox text-primary rounded" defaultChecked />
+                      <input type="checkbox" className="form-checkbox text-primary rounded" name="orderUpdates" checked={notificationPreferences.orderUpdates} onChange={handleNotificationChange} />
                       <span className="text-accent">Order updates</span>
                     </label>
                     <label className="flex items-center space-x-3">
-                      <input type="checkbox" className="form-checkbox text-primary rounded" defaultChecked />
+                      <input type="checkbox" className="form-checkbox text-primary rounded" name="promotionalEmails" checked={notificationPreferences.promotionalEmails} onChange={handleNotificationChange} />
                       <span className="text-accent">Promotional emails</span>
                     </label>
                     <label className="flex items-center space-x-3">
-                      <input type="checkbox" className="form-checkbox text-primary rounded" defaultChecked />
+                      <input type="checkbox" className="form-checkbox text-primary rounded" name="newProductArrivals" checked={notificationPreferences.newProductArrivals} onChange={handleNotificationChange} />
                       <span className="text-accent">New product arrivals</span>
                     </label>
                     <label className="flex items-center space-x-3">
-                      <input type="checkbox" className="form-checkbox text-primary rounded" />
+                      <input type="checkbox" className="form-checkbox text-primary rounded" name="priceDropAlerts" checked={notificationPreferences.priceDropAlerts} onChange={handleNotificationChange} />
                       <span className="text-accent">Price drop alerts</span>
                     </label>
                   </div>

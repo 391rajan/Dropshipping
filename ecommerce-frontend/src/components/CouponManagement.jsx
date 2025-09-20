@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import CouponForm from './CouponForm'; // Import CouponForm
+import { couponAPI } from '../services/api';
 
 function CouponManagement() {
   const [coupons, setCoupons] = useState([]);
@@ -13,11 +14,7 @@ function CouponManagement() {
   const fetchCoupons = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/coupons'); // Assumes admin token is sent
-      if (!response.ok) {
-        throw new Error('Failed to fetch coupons. Are you an admin?');
-      }
-      const data = await response.json();
+      const data = await couponAPI.getAll();
       setCoupons(data);
     } catch (err) {
       setError(err.message);
@@ -31,22 +28,16 @@ function CouponManagement() {
   }, []);
 
   const handleFormSubmit = async (formData) => {
-    const method = editingCoupon ? 'PUT' : 'POST';
-    const url = editingCoupon
-      ? `http://localhost:5000/api/coupons/${editingCoupon._id}`
-      : 'http://localhost:5000/api/coupons';
+    // const method = editingCoupon ? 'PUT' : 'POST';
+    // const url = editingCoupon
+    //   ? `http://localhost:5000/api/coupons/${editingCoupon._id}`
+    //   : 'http://localhost:5000/api/coupons';
 
     try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save coupon.');
+      if (editingCoupon) {
+        await couponAPI.update(editingCoupon._id, formData);
+      } else {
+        await couponAPI.create(formData);
       }
 
       handleCloseModal();
@@ -59,13 +50,7 @@ function CouponManagement() {
   const handleDelete = async (couponId) => {
     if (window.confirm('Are you sure you want to delete this coupon?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/coupons/${couponId}`, {
-          method: 'DELETE',
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to delete coupon.');
-        }
+        await couponAPI.delete(couponId);
 
         fetchCoupons(); // Refresh list
       } catch (err) {

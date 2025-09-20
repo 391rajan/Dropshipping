@@ -7,12 +7,12 @@ import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
   const navigate = useNavigate();
-  const { token, logout, loading: authLoading } = useAuth();
+  const { token, user, logout, loading: authLoading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
 
   const categoriesTimeoutRef = useRef(null);
   const profileTimeoutRef = useRef(null);
@@ -24,7 +24,7 @@ function Navbar() {
       const data = await productAPI.getSearchSuggestions(query);
       setSuggestions(data);
     } else {
-      setSuggestions(null);
+      setSuggestions([]);
     }
   };
 
@@ -80,6 +80,7 @@ function Navbar() {
               if (searchQuery.trim()) {
                 navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
                 setSearchQuery("");
+                setSuggestions([]);
               }
             }}
             className="relative flex items-center border border-accent rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-primary hover:border-primary transition-all duration-200"
@@ -92,53 +93,20 @@ function Navbar() {
               onChange={handleSearchChange}
               className="outline-none text-sm flex-grow bg-transparent placeholder-accent/60"
             />
-            {suggestions && (
+            {suggestions.length > 0 && (
               <div className="absolute top-full mt-2 left-0 w-full bg-white shadow-lg border border-accent rounded-lg p-2 z-20">
-                {suggestions.products.length > 0 && (
-                  <div>
-                    <h3 className="text-xs font-bold text-gray-500 px-2">Products</h3>
-                    {suggestions.products.map((product) => (
-                      <Link
-                        key={product._id}
-                        to={`/product/${product._id}`}
-                        className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150"
-                        onClick={() => setSuggestions(null)}
-                      >
-                        {product.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-                {suggestions.categories.length > 0 && (
-                  <div>
-                    <h3 className="text-xs font-bold text-gray-500 px-2 mt-2">Categories</h3>
-                    {suggestions.categories.map((category) => (
-                      <Link
-                        key={category._id}
-                        to={`/category/${category._id}`}
-                        className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150"
-                        onClick={() => setSuggestions(null)}
-                      >
-                        {category.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-                {suggestions.brands.length > 0 && (
-                  <div>
-                    <h3 className="text-xs font-bold text-gray-500 px-2 mt-2">Brands</h3>
-                    {suggestions.brands.map((brand) => (
-                      <Link
-                        key={brand}
-                        to={`/search?brand=${brand}`}
-                        className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150"
-                        onClick={() => setSuggestions(null)}
-                      >
-                        {brand}
-                      </Link>
-                    ))}
-                  </div>
-                )}
+                {
+                  suggestions.map((suggestion, index) => (
+                    <Link
+                      key={index}
+                      to={`/search?q=${encodeURIComponent(suggestion)}`}
+                      className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150"
+                      onClick={() => setSuggestions([])}
+                    >
+                      {suggestion}
+                    </Link>
+                  ))
+                }
               </div>
             )}
           </form>
@@ -204,6 +172,9 @@ function Navbar() {
                   <Link to="/login" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">Login</Link>
                 ) : (
                   <>
+                    {user && user.isAdmin && (
+                      <Link to="/admin-dashboard" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">Admin</Link>
+                    )}
                     <Link to="/profile" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">My Profile</Link>
                     <Link to="/orders" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">My Orders</Link>
                     <button onClick={handleLogout} className="w-full text-left hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">Logout</button>
@@ -258,6 +229,9 @@ function Navbar() {
             <Link to="/login" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Login / Register</Link>
           ) : (
             <>
+              {user && user.isAdmin && (
+                <Link to="/admin-dashboard" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Admin</Link>
+              )}
               <Link to="/profile" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>My Account</Link>
               <button onClick={handleLogout} className="w-full text-left py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary">Logout</button>
             </>

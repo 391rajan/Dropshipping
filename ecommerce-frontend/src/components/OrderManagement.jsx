@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import OrderDetails from './OrderDetails';
+import { orderAPI } from '../services/api';
 
 function OrderManagement() {
   const [orders, setOrders] = useState([]);
@@ -16,11 +17,7 @@ function OrderManagement() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/orders');
-      if (!response.ok) {
-        throw new Error('Failed to fetch orders. Are you an admin?');
-      }
-      const data = await response.json();
+      const data = await orderAPI.getAll();
       setOrders(data);
     } catch (err) {
       setError(err.message);
@@ -48,17 +45,7 @@ function OrderManagement() {
     if (!selectedOrder || !newStatus) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/orders/${selectedOrder._id}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update order status.');
-      }
+      await orderAPI.updateStatus(selectedOrder._id, { status: newStatus });
 
       fetchOrders(); // Refresh the list
       handleCloseModal();

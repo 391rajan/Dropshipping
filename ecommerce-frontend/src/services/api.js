@@ -85,6 +85,21 @@ export const productAPI = {
     return response.data;
   },
 
+  create: async (productData) => {
+    const response = await api.post('/products', productData);
+    return response.data;
+  },
+
+  update: async (id, productData) => {
+    const response = await api.put(`/products/${id}`, productData);
+    return response.data;
+  },
+
+  delete: async (id) => {
+    const response = await api.delete(`/products/${id}`);
+    return response.data;
+  },
+
   addToRecentlyViewed: async (productId) => {
     const response = await api.post(`/recently-viewed/${productId}`);
     return response.data;
@@ -246,6 +261,14 @@ export const cartAPI = {
 
 // Order APIs
 export const orderAPI = {
+  getAll: async () => {
+    const response = await api.get('/orders');
+    return response.data;
+  },
+  createOrder: async (orderData) => {
+    const response = await api.post('/orders', orderData);
+    return response.data;
+  },
   getById: async (id) => {
     const response = await api.get(`/orders/${id}`);
     return response.data;
@@ -262,6 +285,11 @@ export const orderAPI = {
 
   getTotalRevenue: async () => {
     const response = await api.get('/orders/revenue');
+    return response.data;
+  },
+
+  updateStatus: async (id, statusData) => {
+    const response = await api.put(`/orders/${id}/status`, statusData);
     return response.data;
   },
 };
@@ -289,17 +317,30 @@ export const addressAPI = {
   }
 };
 
-// Payment APIs
-export const paymentAPI = {
-  createOrder: async (data) => {
-    // data should contain { amount, currency, receipt }
-    const response = await api.post('/payments/create-order', data);
+export const couponAPI = {
+  getAll: async () => {
+    const response = await api.get('/coupons');
     return response.data;
   },
+  create: async (couponData) => {
+    const response = await api.post('/coupons', couponData);
+    return response.data;
+  },
+  update: async (id, couponData) => {
+    const response = await api.put(`/coupons/${id}`, couponData);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/coupons/${id}`);
+    return response.data;
+  },
+};
 
-  verifySignature: async (data) => {
-    // data should contain { razorpay_order_id, razorpay_payment_id, razorpay_signature }
-    const response = await api.post('/payments/verify-signature', data);
+// Payment APIs
+export const paymentAPI = {
+  processDummyPayment: async (data) => {
+    // data should contain { orderId, amount }
+    const response = await api.post('/payments/process-dummy-payment', data);
     return response.data;
   },
 };
@@ -339,12 +380,20 @@ export const subscribeToNewsletter = async (data) => {
 };
 
 export const userAPI = {
+  getAll: async () => {
+    const response = await api.get('/auth/users'); // Corrected endpoint
+    return response.data;
+  },
   getUserCount: async () => {
     const response = await api.get('/auth/users/count');
     return response.data;
   },
   getProfile: async () => {
     const response = await api.get('/auth/profile');
+    return response.data;
+  },
+  updateProfile: async (data) => {
+    const response = await api.put('/auth/profile', data);
     return response.data;
   },
 };

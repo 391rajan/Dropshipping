@@ -1,57 +1,47 @@
-/*
-const Razorpay = require('razorpay');
-const crypto = require('crypto');
 
-const keyId = process.env.RAZORPAY_KEY_ID;
-const keySecret = process.env.RAZORPAY_KEY_SECRET;
+const Order = require('../models/Order');
 
-if (!keyId || !keySecret) {
-  console.error('FATAL ERROR: RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are not defined in the environment variables.');
-  console.error('Please add them to your .env file and restart the server.');
-  process.exit(1); // Exit the process with a failure code
-}
-
-const instance = new Razorpay({
-  key_id: keyId,
-  key_secret: keySecret,
-});
-
-// @desc    Create a Razorpay order
-// @route   POST /api/payments/create-order
+// @desc    Process a dummy payment
+// @route   POST /api/payments/process-dummy-payment
 // @access  Private
-exports.createRazorpayOrder = async (req, res) => {
-  const { amount, currency = 'INR', receipt } = req.body; // amount is in the smallest currency unit (e.g., paise)
+exports.processDummyPayment = async (req, res) => {
+  const { orderId, amount } = req.body;
 
-  if (!amount || amount <= 0) {
-    return res.status(400).json({ error: 'Invalid amount' });
-  }
+  console.log(`Starting DUMMY payment process for Order ID: ${orderId}`);
 
-  const order = await instance.orders.create({
-    amount,
-    currency,
-    receipt: receipt || `receipt_order_${new Date().getTime()}`,
-  });
-  res.json(order);
-};
+  await new Promise(resolve => setTimeout(resolve, 2000));
 
-// @desc    Verify Razorpay payment signature
-// @route   POST /api/payments/verify-signature
-// @access  Private
-exports.verifyRazorpaySignature = async (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+  try {
+    const order = await Order.findById(orderId);
 
-  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-    return res.status(400).json({ message: 'Missing required payment verification details.' });
-  }
+    if (!order) {
+      return res.status(404).json({ message: `Order ${orderId} not found.` });
+    }
 
-  const body = razorpay_order_id + '|' + razorpay_payment_id;
+    const isSuccess = true; // Math.random() < 0.8;
 
-  const expectedSignature = crypto.createHmac('sha256', keySecret).update(body.toString()).digest('hex');
+    if (isSuccess) {
+      console.log(`DUMMY payment SUCCEEDED for Order ID: ${orderId}`);
+      order.paymentResult = {
+        id: 'dummy_payment_' + new Date().getTime(),
+        status: 'succeeded',
+        updateTime: new Date().toISOString(),
+        emailAddress: req.user.email,
+      };
+      order.status = 'Processing';
+      const updatedOrder = await order.save();
+      
+      res.status(200).json({ success: true, message: 'Dummy payment successful!', order: updatedOrder });
 
-  if (expectedSignature === razorpay_signature) {
-    res.status(200).json({ message: 'Payment verified successfully' });
-  } else {
-    res.status(400).json({ message: 'Invalid payment signature' });
+    } else {
+      console.log(`DUMMY payment FAILED for Order ID: ${orderId}`);
+      order.status = 'Cancelled';
+      const updatedOrder = await order.save();
+
+      res.status(400).json({ success: false, message: 'Dummy payment failed.', order: updatedOrder });
+    }
+  } catch (error) {
+    console.error(`Error in DUMMY payment for Order ID: ${orderId}`, error);
+    res.status(500).json({ message: 'An error occurred during the dummy payment process.' });
   }
 };
-*/

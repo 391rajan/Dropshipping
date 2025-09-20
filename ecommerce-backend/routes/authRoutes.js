@@ -12,6 +12,7 @@ const {
   deleteUser, // Added missing import
   getUserCount,
   getProfile,
+  updateProfile,
 } = require("../controllers/authController");
 const { protect, admin } = require('../middleware/auth');
 const { body } = require('express-validator');
@@ -40,7 +41,9 @@ router.post("/login", asyncHandler(login));
 router.post("/forgot-password", asyncHandler(forgotPassword));
 router.post("/reset-password/:token", asyncHandler(resetPassword));
 
-router.get('/profile', protect, asyncHandler(getProfile));
+router.route('/profile')
+  .get(protect, asyncHandler(getProfile))
+  .put(protect, asyncHandler(updateProfile));
 
 // Admin routes for user management
 // IMPORTANT: Specific routes like '/count' must come before dynamic routes like '/:id'

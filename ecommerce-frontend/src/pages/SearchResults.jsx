@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import { productAPI, categoryAPI } from '../services/api';
 import ProductCard from '../components/ProductCard';
 
 const SearchResults = () => {
@@ -20,8 +20,8 @@ const SearchResults = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/categories');
-        setCategories(response.data);
+        const response = await categoryAPI.getAll();
+        setCategories(response);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -34,16 +34,8 @@ const SearchResults = () => {
     const fetchSearchResults = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('http://localhost:5000/api/products/search', {
-          params: {
-            q: query,
-            category: filters.category,
-            minPrice: filters.minPrice,
-            maxPrice: filters.maxPrice,
-            sortBy: filters.sortBy
-          }
-        });
-        setProducts(response.data);
+        const response = await productAPI.searchProducts(query, filters);
+        setProducts(response);
       } catch (error) {
         setError('Failed to fetch search results');
         console.error('Error fetching search results:', error);

@@ -98,6 +98,7 @@ exports.addToCart = async (req, res) => {
 
     await _calculateCartTotals(cart);
     await cart.save();
+    await cart.populate('items.product');
     res.json(cart);
   } catch (error) {
     res.status(500).json({ message: 'Error adding to cart', error: error.message });
@@ -120,6 +121,7 @@ exports.removeFromCart = async (req, res) => {
 
     await _calculateCartTotals(cart);
     await cart.save();
+    await cart.populate('items.product');
     res.json(cart);
   } catch (error) {
     res.status(500).json({ message: 'Error removing from cart', error: error.message });
@@ -153,6 +155,7 @@ exports.updateCartItemQuantity = async (req, res) => {
 
     await _calculateCartTotals(cart);
     await cart.save();
+    await cart.populate('items.product');
     res.json(cart);
   } catch (error) {
     res.status(500).json({ message: 'Error updating cart item quantity', error: error.message });
@@ -193,6 +196,8 @@ exports.applyCouponToCart = async (req, res) => {
     cart.appliedCoupon = coupon._id;
     await _calculateCartTotals(cart);
     await cart.save();
+    await cart.populate('items.product');
+    await cart.populate('appliedCoupon');
 
     res.json({ message: 'Coupon applied successfully', cart });
 
@@ -214,6 +219,7 @@ exports.removeCouponFromCart = async (req, res) => {
     cart.appliedCoupon = undefined;
     await _calculateCartTotals(cart);
     await cart.save();
+    await cart.populate('items.product');
 
     res.json({ message: 'Coupon removed successfully', cart });
 
@@ -236,6 +242,7 @@ exports.clearCart = async (req, res) => {
     cart.appliedCoupon = undefined;
     await _calculateCartTotals(cart);
     await cart.save();
+    await cart.populate('items.product');
 
     res.json({ message: 'Cart cleared successfully', cart });
 

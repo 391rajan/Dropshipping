@@ -86,6 +86,9 @@ exports.createOrder = async (req, res) => {
       // This throws an error that should be caught by a global error handler
       throw new Error(`Product with ID ${item.product} not found`);
     }
+    if (product.stockQuantity < item.quantity) {
+      throw new Error(`Not enough stock for ${product.name}`);
+    }
     return {
       name: product.name,
       image: product.image,
@@ -109,6 +112,13 @@ exports.createOrder = async (req, res) => {
   });
 
   const createdOrder = await order.save();
+
+  // Decrement stock
+  for (const item of order.orderItems) {
+    await Product.findByIdAndUpdate(item.product, {
+      $inc: { stockQuantity: -item.quantity },
+    });
+  }
 
   // Clear user's cart after successful order
   await Cart.findOneAndUpdate(
@@ -138,6 +148,7 @@ exports.getMyOrders = async (req, res) => {
 exports.getOrderById = async (req, res) => {
   const order = await Order.findById(req.params.id)
     .populate('user', 'name email')
+    .populate('shippingAddress')
     .populate('orderItems.product', 'name price image');
     
   if (!order) {

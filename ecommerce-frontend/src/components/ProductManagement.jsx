@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import ProductForm from './ProductForm';
+import { productAPI } from '../services/api';
 
 function ProductManagement() {
   const [products, setProducts] = useState([]);
@@ -12,11 +13,7 @@ function ProductManagement() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/products');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
+      const data = await productAPI.getAll();
       setProducts(data);
     } catch (err) {
       setError(err.message);
@@ -30,24 +27,12 @@ function ProductManagement() {
   }, []);
 
   const handleFormSubmit = async (formData) => {
-    const method = editingProduct ? 'PUT' : 'POST';
-    const url = editingProduct
-      ? `http://localhost:5000/api/products/${editingProduct._id}`
-      : 'http://localhost:5000/api/products';
-
     try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save product.');
+      if (editingProduct) {
+        await productAPI.update(editingProduct._id, formData);
+      } else {
+        await productAPI.create(formData);
       }
-
       handleCloseModal();
       fetchProducts(); // Refresh the list
     } catch (err) {
@@ -58,14 +43,7 @@ function ProductManagement() {
   const handleDelete = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
-          method: 'DELETE',
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to delete product.');
-        }
-
+        await productAPI.delete(productId);
         fetchProducts();
       } catch (err) {
         setError(err.message);

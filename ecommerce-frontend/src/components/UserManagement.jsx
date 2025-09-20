@@ -1,6 +1,7 @@
 // src/components/UserManagement.jsx
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
+import { userAPI } from '../services/api'; // Import userAPI
 
 function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -12,11 +13,7 @@ function UserManagement() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/users'); // Assumes admin token is sent via auth context/headers
-      if (!response.ok) {
-        throw new Error('Failed to fetch users. Are you an admin?');
-      }
-      const data = await response.json();
+      const data = await userAPI.getAll(); // Using userAPI.getAll()
       setUsers(data);
     } catch (err) {
       setError(err.message);
@@ -32,12 +29,14 @@ function UserManagement() {
   const handleDelete = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
-          method: 'DELETE',
-        });
-        if (!response.ok) {
-          throw new Error('Failed to delete user.');
-        }
+        // Original fetch call:
+        // const response = await fetch(`http://localhost:5000/api/auth/users/${selectedUser._id}`, {
+        //   method: 'DELETE',
+        // });
+        // if (!response.ok) {
+        //   throw new Error('Failed to delete user.');
+        // }
+        await userAPI.delete(userId); // Using userAPI.delete()
         fetchUsers(); // Refresh list
       } catch (err) {
         alert(`Error: ${err.message}`);
@@ -58,14 +57,16 @@ function UserManagement() {
   const handleUpdateRole = async (isAdmin) => {
     if (!selectedUser) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${selectedUser._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isAdmin }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update user role.');
-      }
+      // Original fetch call:
+      // const response = await fetch(`http://localhost:5000/api/auth/users/${selectedUser._id}`, {
+      //   method: 'PUT',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ isAdmin }),
+      // });
+      // if (!response.ok) {
+      //   throw new Error('Failed to update user role.');
+      // }
+      await userAPI.update(selectedUser._id, { isAdmin }); // Using userAPI.update()
       fetchUsers();
       handleCloseModal();
     } catch (err) {

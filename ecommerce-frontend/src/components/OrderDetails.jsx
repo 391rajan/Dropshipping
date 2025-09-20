@@ -30,14 +30,7 @@ function OrderDetails({ order }) {
           <p className="text-gray-600">{order.user?.name}</p>
           <p className="text-gray-600">{order.user?.email}</p>
         </div>
-        <div>
-          <h4 className="text-lg font-semibold text-gray-800 mb-2">Shipping Address</h4>
-          <address className="not-italic text-gray-600">
-            {order.shippingAddress.street}<br />
-            {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}<br />
-            {order.shippingAddress.country}
-          </address>
-        </div>
+
       </div>
 
       {/* Order Items */}

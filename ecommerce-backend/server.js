@@ -7,9 +7,10 @@ const config = require("./config");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
+app.set('trust proxy', 1);
 
 // Set security HTTP headers
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));

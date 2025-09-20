@@ -7,6 +7,7 @@ const { protect, admin } = require('../middleware/auth');
 router.get('/deals', asyncHandler(productController.getDealProducts));
 // Public routes - specific routes must come before dynamic routes like /:id
 router.get('/search/suggestions', asyncHandler(productController.getSearchSuggestions));
+router.get('/search', asyncHandler(productController.searchProducts));
 
 // Admin-only route
 router.get('/count', protect, admin, asyncHandler(productController.getProductCount));

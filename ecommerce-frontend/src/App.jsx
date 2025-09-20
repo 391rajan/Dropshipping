@@ -29,6 +29,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AuthCallback from "./pages/AuthCallback"; // Import the new component
 import EmailVerification from "./pages/EmailVerification";
+import OrderSuccess from "./pages/OrderSuccess";
 
 // Component to conditionally render layout
 function AppRoutes() {
@@ -69,7 +70,8 @@ function AppRoutes() {
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/category/:id" element={<CategoryPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+<Route path="/order-success/:orderId" element={<OrderSuccess />} />
         </Routes>
       </div>
 
