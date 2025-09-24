@@ -100,8 +100,12 @@ export const productAPI = {
     return response.data;
   },
 
-  addToRecentlyViewed: async (productId) => {
-    const response = await api.post(`/recently-viewed/${productId}`);
+  uploadImages: async (formData) => {
+    const response = await api.post('/products/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 };

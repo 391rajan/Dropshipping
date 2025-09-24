@@ -9,21 +9,21 @@ const heroSlides = [
     title: "Discover Your Next Favorite Product",
     subtitle: "Curated collections for every need.",
     ctaText: "Shop New Arrivals",
-    ctaLink: "/shop/new-arrivals",
+    ctaLink: "/shop",
   },
   {
     image: "https://placehold.co/1600x600/e74c3c/ffffff?text=Unbeatable+Deals", // Placeholder Image
     title: "Unbeatable Deals This Week!",
     subtitle: "Don't miss out on limited-time offers.",
     ctaText: "Explore Deals",
-    ctaLink: "/offers",
+    ctaLink: "/deals",
   },
   {
     image: "https://placehold.co/1600x600/2ecc71/ffffff?text=Quality+Delivered", // Placeholder Image
     title: "Quality Products, Delivered Fast",
     subtitle: "Your dropshipping journey starts here.",
     ctaText: "Find Your Style",
-    ctaLink: "/shop/clothing",
+    ctaLink: "/shop",
   },
 ];
 

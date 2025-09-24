@@ -4,16 +4,28 @@ const Product = require('../models/Product');
 // Get user's recently viewed products
 exports.getRecentlyViewed = async (req, res) => {
   try {
-    let recentlyViewed = await RecentlyViewed.findOne({ user: req.user.id })
-      .populate('products.product', 'name price images stockCount rating numReviews')
-      .sort({ 'products.viewedAt': -1 });
+    const recentlyViewedList = await RecentlyViewed.findOne({ user: req.user.id });
     
-    if (!recentlyViewed) {
-      recentlyViewed = new RecentlyViewed({ user: req.user.id, products: [] });
-      await recentlyViewed.save();
+    if (!recentlyViewedList || recentlyViewedList.products.length === 0) {
+      return res.json([]);
     }
 
-    res.json(recentlyViewed.products);
+    // Extract product IDs and sort them based on viewedAt timestamp
+    const sortedProductIds = recentlyViewedList.products
+      .sort((a, b) => new Date(b.viewedAt) - new Date(a.viewedAt))
+      .map(p => p.product);
+
+    // Fetch and populate products based on the sorted order
+    const products = await Product.find({ '_id': { $in: sortedProductIds } })
+      .populate('category', 'name');
+
+    // Re-sort the products to match the recently viewed order, as MongoDB's $in does not preserve order.
+    const sortedProducts = sortedProductIds.map(id => 
+      products.find(p => p._id.toString() === id.toString())
+    ).filter(p => p); // Filter out any nulls if a product was deleted
+
+    // Limit to the latest 4 for a clean UI, you can adjust this number
+    res.json(sortedProducts.slice(0, 4));
   } catch (error) {
     res.status(500).json({ message: 'Error fetching recently viewed products', error: error.message });
   }

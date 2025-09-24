@@ -58,18 +58,18 @@ function AppRoutes() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/verify-email/:token" element={<EmailVerification />} />
           <Route path="/shop" element={<ShopAll />} />
-          <Route path="/offers" element={<Deals />} />
-          <Route path="/track" element={<TrackOrder />} />
+          <Route path="/deals" element={<Deals />} />
+          <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/orders" element={<OrderHistory />} />
+          <Route path="/order-history" element={<OrderHistory />} />
           <Route path="/compare" element={<Compare />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/search" element={<SearchResults />} />
-          <Route path="/category/:id" element={<CategoryPage />} />
+          <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
 <Route path="/order-success/:orderId" element={<OrderSuccess />} />
         </Routes>

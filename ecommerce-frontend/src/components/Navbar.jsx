@@ -1,8 +1,8 @@
 // src/components/Navbar.jsx
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Search, ShoppingCart, User, Menu, X, ChevronDown, LayoutGrid } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { productAPI } from "../services/api";
+import { productAPI, categoryAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
@@ -13,9 +13,22 @@ function Navbar() {
   const [showProfile, setShowProfile] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const categoriesTimeoutRef = useRef(null);
   const profileTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const fetchedCategories = await categoryAPI.getAll();
+        setCategories(fetchedCategories);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleSearchChange = async (e) => {
     const query = e.target.value;
@@ -133,9 +146,15 @@ function Navbar() {
             </button>
             {showCategories && (
               <div className="absolute top-full mt-2 left-0 bg-white shadow-lg border border-accent rounded-lg p-2 min-w-[160px] z-20">
-                <Link to="/electronics" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">Electronics</Link>
-                <Link to="/clothing" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">Clothing</Link>
-                <Link to="/accessories" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">Accessories</Link>
+                {categories.map((category) => (
+                  <Link
+                    key={category._id}
+                    to={`/category/${category.slug}`}
+                    className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150"
+                  >
+                    {category.name}
+                  </Link>
+                ))}
               </div>
             )}
           </div>
@@ -176,7 +195,7 @@ function Navbar() {
                       <Link to="/admin-dashboard" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">Admin</Link>
                     )}
                     <Link to="/profile" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">My Profile</Link>
-                    <Link to="/orders" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">My Orders</Link>
+                    <Link to="/order-history" className="block hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">My Orders</Link>
                     <button onClick={handleLogout} className="w-full text-left hover:bg-primary/10 hover:text-primary p-2 rounded text-accent transition-colors duration-150">Logout</button>
                   </>
                 )}
@@ -200,8 +219,8 @@ function Navbar() {
   <div className="hidden md:flex justify-center items-center h-12 px-4 md:px-8 border-t border-accent/20">
   <div className="flex gap-6 lg:gap-8 flex-wrap justify-center font-medium text-accent"> {/* Base text color */}
           <Link to="/shop" className="hover:text-primary transition-colors duration-200">Shop All</Link>
-          <Link to="/offers" className="hover:text-primary transition-colors duration-200">Deals</Link>
-          <Link to="/track" className="hover:text-primary transition-colors duration-200">Track Order</Link>
+          <Link to="/deals" className="hover:text-primary transition-colors duration-200">Deals</Link>
+          <Link to="/track-order" className="hover:text-primary transition-colors duration-200">Track Order</Link>
           <Link to="/wishlist" className="hover:text-primary transition-colors duration-200">Wishlist</Link>
           <Link to="/about" className="hover:text-primary transition-colors duration-200">About Us</Link>
           <Link to="/contact" className="hover:text-primary transition-colors duration-200">Contact</Link>
@@ -221,7 +240,7 @@ function Navbar() {
           <Link to="/about" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
           <Link to="/contact" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
           <div className="border-t border-accent/20 my-2"></div> {/* Separator */}
-          <Link to="/categories" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>All Categories</Link>
+          <Link to="/shop" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>All Categories</Link>
           <Link to="/cart" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Cart ({cartItemCount})</Link>
           {authLoading ? (
             <div className="p-2 text-accent">Loading...</div>

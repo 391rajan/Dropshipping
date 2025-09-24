@@ -30,8 +30,8 @@ function Footer() {
           <ul className="space-y-3 text-sm"> {/* More vertical space */}
             <li><Link to="/" className="hover:text-white transition-colors duration-200">Home</Link></li>
             <li><Link to="/shop" className="hover:text-white transition-colors duration-200">Shop All</Link></li>
-            <li><Link to="/categories" className="hover:text-white transition-colors duration-200">Categories</Link></li>
-            <li><Link to="/track" className="hover:text-white transition-colors duration-200">Track Order</Link></li> {/* Added from navbar */}
+            <li><Link to="/shop" className="hover:text-white transition-colors duration-200">Categories</Link></li>
+            <li><Link to="/track-order" className="hover:text-white transition-colors duration-200">Track Order</Link></li> {/* Added from navbar */}
             <li><Link to="/about" className="hover:text-white transition-colors duration-200">About Us</Link></li> {/* Added from navbar */}
             <li><Link to="/contact" className="hover:text-white transition-colors duration-200">Contact</Link></li>
           </ul>
@@ -41,10 +41,10 @@ function Footer() {
         <div>
           <h4 className="font-bold text-lg mb-4 text-white">Policies</h4>
           <ul className="space-y-3 text-sm">
-            <li><Link to="/privacy-policy" className="hover:text-white transition-colors duration-200">Privacy Policy</Link></li> {/* Consistent slug */}
-            <li><Link to="/terms-of-service" className="hover:text-white transition-colors duration-200">Terms of Service</Link></li> {/* Consistent slug */}
-            <li><Link to="/refund-policy" className="hover:text-white transition-colors duration-200">Refund Policy</Link></li> {/* Standard terminology */}
-            <li><Link to="/shipping-policy" className="hover:text-white transition-colors duration-200">Shipping Policy</Link></li> {/* Often a separate policy */}
+            <li><Link to="/" className="hover:text-white transition-colors duration-200">Privacy Policy</Link></li> {/* Consistent slug */}
+            <li><Link to="/" className="hover:text-white transition-colors duration-200">Terms of Service</Link></li> {/* Consistent slug */}
+            <li><Link to="/" className="hover:text-white transition-colors duration-200">Refund Policy</Link></li> {/* Standard terminology */}
+            <li><Link to="/" className="hover:text-white transition-colors duration-200">Shipping Policy</Link></li> {/* Often a separate policy */}
           </ul>
         </div>
 
@@ -52,9 +52,9 @@ function Footer() {
         <div>
           <h4 className="font-bold text-lg mb-4 text-white">Customer Support</h4> {/* Renamed from Help to Support */}
           <ul className="space-y-3 text-sm">
-            <li><Link to="/faqs" className="hover:text-white transition-colors duration-200">FAQs</Link></li> {/* Consistent slug */}
-            <li><Link to="/shipping-info" className="hover:text-white transition-colors duration-200">Shipping & Delivery</Link></li> {/* More user-friendly */}
-            <li><Link to="/returns-exchanges" className="hover:text-white transition-colors duration-200">Returns & Exchanges</Link></li> {/* Common specific policy */}
+            <li><Link to="/" className="hover:text-white transition-colors duration-200">FAQs</Link></li> {/* Consistent slug */}
+            <li><Link to="/" className="hover:text-white transition-colors duration-200">Shipping & Delivery</Link></li> {/* More user-friendly */}
+            <li><Link to="/" className="hover:text-white transition-colors duration-200">Returns & Exchanges</Link></li> {/* Common specific policy */}
             <li><Link to="/contact" className="hover:text-white transition-colors duration-200">Contact Us</Link></li> {/* Added a direct link to contact */}
           </ul>
         </div>
@@ -92,13 +92,13 @@ function Footer() {
           </div>
           
           <div className="flex gap-4 mt-5"> {/* Increased top margin for social icons */}
-            <a href="https://www.instagram.com/your_dropshipping_store" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-gray-400 hover:text-white transition-colors duration-200">
+            <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-gray-400 hover:text-white transition-colors duration-200">
               <Instagram size={24} /> {/* Increased icon size */}
             </a>
-            <a href="https://twitter.com/your_dropshipping_store" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="text-gray-400 hover:text-white transition-colors duration-200">
+            <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="text-gray-400 hover:text-white transition-colors duration-200">
               <Twitter size={24} />
             </a>
-            <a href="https://www.facebook.com/your_dropshipping_store" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-gray-400 hover:text-white transition-colors duration-200">
+            <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-gray-400 hover:text-white transition-colors duration-200">
               <Facebook size={24} />
             </a>
           </div>
@@ -110,16 +110,7 @@ function Footer() {
 
       {/* Payment & Copyright */}
       <div className="mt-8 text-center text-sm text-gray-400"> {/* Adjusted text color */}
-        <p className="mb-4 flex justify-center items-center flex-wrap gap-x-4 gap-y-2"> {/* Added flex and gap for payment icons */}
-          <span className="mr-2">We accept:</span>
-          {/* Replace with actual SVG or image components for payment logos */}
-          <img src="/payment-icons/visa.svg" alt="Visa" className="h-5" />
-          <img src="/payment-icons/mastercard.svg" alt="MasterCard" className="h-5" />
-          <img src="/payment-icons/paypal.svg" alt="PayPal" className="h-5" />
-          <img src="/payment-icons/upi.svg" alt="UPI" className="h-5" /> {/* Assuming you have a UPI icon */}
-          {/* Add more as needed */}
-        </p>
-        <p>&copy; {currentYear} Your Dropshipping Store. All rights reserved.</p> {/* Changed "Dropshipping" to "Your Dropshipping Store" */}
+        <p>&copy; {currentYear} Ecommerce. All rights reserved.</p> {/* Changed "Dropshipping" to "Ecommerce" */}
       </div>
     </footer>
   );

@@ -33,8 +33,8 @@ const products = [
     price: 1199.99,
     originalPrice: 1299.99,
     images: [
-      'uploads/macbook_air_m2_1.jpg',
-      'uploads/macbook_air_m2_2.jpg'
+      'uploads/macbook1.jpg',
+      'uploads/macbook2.jpg'
     ],
     brand: 'Apple',
     stock: 30,
@@ -55,8 +55,8 @@ const products = [
     price: 399.99,
     originalPrice: 449.99,
     images: [
-      'uploads/sony_wh1000xm5_1.jpg',
-      'uploads/sony_wh1000xm5_2.jpg'
+      'uploads/sony1.jpg',
+      'uploads/sony2.webp'
     ],
     brand: 'Sony',
     stock: 75,
@@ -77,8 +77,8 @@ const products = [
     price: 799.99,
     originalPrice: 899.99,
     images: [
-      'uploads/samsung_galaxy_s24_1.jpg',
-      'uploads/samsung_galaxy_s24_2.jpg'
+      'uploads/s24_1.webp',
+      'uploads/s24_2.jpg'
     ],
     brand: 'Samsung',
     stock: 45,
@@ -99,8 +99,8 @@ const products = [
     price: 1799.99,
     originalPrice: 1999.99,
     images: [
-      'uploads/dell_xps_15_1.jpg',
-      'uploads/dell_xps_15_2.jpg'
+      'uploads/dell_1.webp',
+      'uploads/dell_2.jpg'
     ],
     brand: 'Dell',
     stock: 20,
@@ -123,8 +123,8 @@ const products = [
     price: 29.99,
     originalPrice: 39.99,
     images: [
-      'uploads/cotton_tshirt_1.jpg',
-      'uploads/cotton_tshirt_2.jpg'
+      'uploads/tshirt_1.jpg',
+      'uploads/tshirt_2.webp'
     ],
     brand: 'EcoWear',
     stock: 200,
@@ -151,8 +151,8 @@ const products = [
     price: 89.99,
     originalPrice: 119.99,
     images: [
-      'uploads/slim_fit_jeans_1.jpg',
-      'uploads/slim_fit_jeans_2.jpg'
+      'uploads/jeans1.webp',
+      'uploads/jeans2.jpg'
     ],
     brand: 'DenimCo',
     stock: 150,
@@ -179,8 +179,8 @@ const products = [
     price: 149.99,
     originalPrice: 199.99,
     images: [
-      'uploads/casual_blazer_1.jpg',
-      'uploads/casual_blazer_2.jpg'
+      'uploads/blazer1.jpg',
+      'uploads/blazer2.jpg'
     ],
     brand: 'StyleCraft',
     stock: 80,
@@ -209,8 +209,8 @@ const products = [
     price: 129.99,
     originalPrice: 149.99,
     images: [
-      'uploads/nike_air_max_270_1.jpg',
-      'uploads/nike_air_max_270_2.jpg'
+      'uploads/nikeairmax1.avif',
+      'uploads/nikeairmax2.webp'
     ],
     brand: 'Nike',
     stock: 120,
@@ -238,8 +238,8 @@ const products = [
     price: 179.99,
     originalPrice: 199.99,
     images: [
-      'uploads/adidas_ultraboost_22_1.jpg',
-      'uploads/adidas_ultraboost_22_2.jpg'
+      'uploads/adidas1.webp',
+      'uploads/adidas2.webp'
     ],
     brand: 'Adidas',
     stock: 95,
@@ -269,8 +269,8 @@ const products = [
     price: 79.99,
     originalPrice: 99.99,
     images: [
-      'uploads/smart_led_desk_lamp_1.jpg',
-      'uploads/smart_led_desk_lamp_2.jpg'
+      'uploads/lamp1.webp',
+      'uploads/lamp2.jpg'
     ],
     brand: 'SmartHome',
     stock: 65,
@@ -291,8 +291,8 @@ const products = [
     price: 129.99,
     originalPrice: 159.99,
     images: [
-      'uploads/coffee_maker_1.jpg',
-      'uploads/coffee_maker_2.jpg'
+      'uploads/coffeemaker1.webp',
+      'uploads/coffeemaker2.webp'
     ],
     brand: 'BrewMaster',
     stock: 45,
@@ -315,8 +315,8 @@ const products = [
     price: 49.99,
     originalPrice: 69.99,
     images: [
-      'uploads/yoga_mat_1.jpg',
-      'uploads/yoga_mat_2.jpg'
+      'uploads/yogamat1.jpg',
+      'uploads/yogamat2.jpg'
     ],
     brand: 'YogaLife',
     stock: 180,
@@ -337,8 +337,8 @@ const products = [
     price: 299.99,
     originalPrice: 399.99,
     images: [
-      'uploads/adjustable_dumbbells_1.jpg',
-      'uploads/adjustable_dumbbells_2.jpg'
+      'uploads/dumbbells1.jpg',
+      'uploads/dumbbells2.jpg'
     ],
     brand: 'PowerBlock',
     stock: 35,

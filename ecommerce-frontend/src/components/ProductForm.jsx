@@ -1,5 +1,6 @@
 // src/components/ProductForm.jsx
 import React, { useState, useEffect } from 'react';
+import { productAPI } from '../services/api';
 
 function ProductForm({ initialData, onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
@@ -9,9 +10,9 @@ function ProductForm({ initialData, onSubmit, onCancel }) {
     category: '',
     brand: '',
     stock: '',
-    images: [''], // Initialize with an empty string for one image URL
-    // Add other fields from your schema as needed
+    images: [], // Will store existing image paths
   });
+  const [imageFiles, setImageFiles] = useState([]); // For new file uploads
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -38,7 +39,7 @@ function ProductForm({ initialData, onSubmit, onCancel }) {
         category: initialData.category?._id || initialData.category || '',
         brand: initialData.brand || '',
         stock: initialData.stock || '',
-        images: initialData.images && initialData.images.length > 0 ? initialData.images : [''],
+        images: initialData.images || [],
       });
     }
   }, [initialData]);
@@ -48,26 +49,28 @@ function ProductForm({ initialData, onSubmit, onCancel }) {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageURLChange = (index, value) => {
-    const newImages = [...formData.images];
-    newImages[index] = value;
-    setFormData((prev) => ({ ...prev, images: newImages }));
-  };
-
-  const addImageURLField = () => {
-    setFormData((prev) => ({ ...prev, images: [...prev.images, ''] }));
-  };
-
-  const removeImageURLField = (index) => {
-    const newImages = formData.images.filter((_, i) => i !== index);
-    setFormData((prev) => ({ ...prev, images: newImages.length > 0 ? newImages : [''] }));
+  const handleImageFileChange = (e) => {
+    setImageFiles(Array.from(e.target.files));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const imagesToSend = formData.images.filter(url => url.trim() !== '');
-    await onSubmit({ ...formData, images: imagesToSend });
+
+    let uploadedImagePaths = formData.images; // Keep existing images
+
+    // If new images are selected, upload them
+    if (imageFiles.length > 0) {
+      const uploadFormData = new FormData();
+      imageFiles.forEach(file => {
+        uploadFormData.append('images', file);
+      });
+
+      const uploadResponse = await productAPI.uploadImages(uploadFormData);
+      uploadedImagePaths = [...uploadedImagePaths, ...uploadResponse.images];
+    }
+
+    await onSubmit({ ...formData, images: uploadedImagePaths });
     setLoading(false);
   };
 
@@ -103,36 +106,17 @@ function ProductForm({ initialData, onSubmit, onCancel }) {
         <input type="number" name="stock" id="stock" value={formData.stock} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
       </div>
 
-      {/* Image URLs Input */}
+      {/* Image File Input */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Product Images (URLs)</label>
-        {formData.images.map((imageUrl, index) => (
-          <div key={index} className="flex items-center mt-2">
-            <input
-              type="url"
-              value={imageUrl}
-              onChange={(e) => handleImageURLChange(index, e.target.value)}
-              placeholder="Enter image URL"
-              className="flex-1 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500"
-            />
-            {formData.images.length > 1 && (
-              <button
-                type="button"
-                onClick={() => removeImageURLField(index)}
-                className="ml-2 text-red-600 hover:text-red-800"
-              >
-                Remove
-              </button>
-            )}
-          </div>
-        ))}
-        <button
-          type="button"
-          onClick={addImageURLField}
-          className="mt-2 px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          Add another image URL
-        </button>
+        <label htmlFor="images" className="block text-sm font-medium text-gray-700">Product Images</label>
+        <input 
+          type="file" 
+          name="images" 
+          id="images" 
+          onChange={handleImageFileChange} 
+          multiple 
+          className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+        <p className="text-xs text-gray-500 mt-1">Select one or more images. New images will be added to existing ones.</p>
       </div>
 
       <div className="flex justify-end space-x-4">

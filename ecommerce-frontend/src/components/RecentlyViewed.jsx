@@ -15,7 +15,11 @@ const RecentlyViewed = () => {
       }
       try {
         const data = await recentlyViewedAPI.get();
-        setProducts(data);
+        // The API returns an array of product objects.
+        // Filter out any potential null/undefined products before setting state.
+        if (Array.isArray(data)) {
+          setProducts(data.filter(p => p));
+        }
       } catch (err) {
         console.error('Error fetching recently viewed products:', err);
         setError('Failed to load recently viewed products');
