@@ -126,6 +126,11 @@ export const categoryAPI = {
     return response.data;
   },
 
+  getBySlug: async (slug) => {
+    const response = await api.get(`/categories/slug/${slug}`);
+    return response.data;
+  },
+
   getProducts: async (id, page = 1, limit = 10) => {
     const response = await api.get(`/categories/${id}/products`, {
       params: { page, limit },
@@ -378,9 +383,11 @@ export const getQuestionsForProduct = async (productId) => {
   return response.data;
 };
 
-export const subscribeToNewsletter = async (data) => {
-  const response = await api.post('/newsletter/subscribe', data);
-  return response.data;
+export const newsletterAPI = {
+  subscribe: async (data) => {
+    const response = await api.post('/newsletter/subscribe', data);
+    return response.data;
+  },
 };
 
 export const userAPI = {

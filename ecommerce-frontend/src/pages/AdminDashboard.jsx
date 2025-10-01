@@ -6,6 +6,7 @@ import UserManagement from '../components/UserManagement';
 import CategoryManagement from '../components/CategoryManagement';
 import CouponManagement from '../components/CouponManagement';
 import { userAPI, productAPI, orderAPI } from '../services/api';
+import { FaUsers, FaBoxOpen, FaShoppingCart, FaDollarSign } from 'react-icons/fa';
 
 function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -46,67 +47,89 @@ function AdminDashboard() {
     fetchStats();
   }, []);
 
+  const StatCard = ({ icon, title, value, loading, error, colorClass }) => (
+    <div className={`bg-white p-6 rounded-xl shadow-lg border border-accent/20 flex items-center space-x-4 transition-transform transform hover:scale-105`}>
+      <div className={`text-4xl ${colorClass}`}>{icon}</div>
+      <div>
+        <h2 className="text-lg font-semibold text-accent">{title}</h2>
+        {loading ? (
+          <p className="text-2xl font-bold text-gray-400">Loading...</p>
+        ) : error ? (
+          <p className="text-2xl font-bold text-red-500">Error</p>
+        ) : (
+          <p className={`text-3xl font-bold ${colorClass}`}>{value}</p>
+        )}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
+    <div className="container mx-auto px-4 py-12">
+      <h1 className="text-4xl font-bold text-primary mb-8">Admin Dashboard</h1>
       
+      {statsError && (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md shadow">
+          <p className="font-bold">Error</p>
+          <p>{statsError}</p>
+        </div>
+      )}
+
       {/* Statistics Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold text-gray-600">Total Users</h2>
-          {loadingStats ? (
-            <p>Loading...</p>
-          ) : statsError ? (
-            <p className="text-red-500">Error</p>
-          ) : (
-            <p className="text-3xl font-bold text-blue-600">{stats.userCount}</p>
-          )}
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold text-gray-600">Total Products</h2>
-          {loadingStats ? (
-            <p>Loading...</p>
-          ) : statsError ? (
-            <p className="text-red-500">Error</p>
-          ) : (
-            <p className="text-3xl font-bold text-green-600">{stats.productCount}</p>
-          )}
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold text-gray-600">Total Orders</h2>
-          {loadingStats ? (
-            <p>Loading...</p>
-          ) : statsError ? (
-            <p className="text-red-500">Error</p>
-          ) : (
-            <p className="text-3xl font-bold text-purple-600">{stats.orderCount}</p>
-          )}
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold text-gray-600">Total Revenue</h2>
-          {loadingStats ? (
-            <p>Loading...</p>
-          ) : statsError ? (
-            <p className="text-red-500">Error</p>
-          ) : (
-            <p className="text-3xl font-bold text-yellow-600">${stats.totalRevenue.toFixed(2)}</p>
-          )}
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <StatCard 
+          icon={<FaUsers />} 
+          title="Total Users" 
+          value={stats.userCount} 
+          loading={loadingStats} 
+          error={statsError}
+          colorClass="text-primary"
+        />
+        <StatCard 
+          icon={<FaBoxOpen />} 
+          title="Total Products" 
+          value={stats.productCount} 
+          loading={loadingStats} 
+          error={statsError}
+          colorClass="text-green-600"
+        />
+        <StatCard 
+          icon={<FaShoppingCart />} 
+          title="Total Orders" 
+          value={stats.orderCount} 
+          loading={loadingStats} 
+          error={statsError}
+          colorClass="text-purple-600"
+        />
+        <StatCard 
+          icon={<FaDollarSign />} 
+          title="Total Revenue" 
+          value={`$${stats.totalRevenue.toFixed(2)}`} 
+          loading={loadingStats} 
+          error={statsError}
+          colorClass="text-accent"
+        />
       </div>
       
       {/* Main content area for admin features */}
-      <div className="space-y-8">
-        <ProductManagement />
-        <div className="border-t border-gray-200 pt-8">
+      <div className="space-y-12">
+        <div className="bg-white p-8 rounded-xl shadow-lg border border-accent/20">
+          <h2 className="text-2xl font-bold text-primary mb-6">Product Management</h2>
+          <ProductManagement />
+        </div>
+        <div className="bg-white p-8 rounded-xl shadow-lg border border-accent/20">
+          <h2 className="text-2xl font-bold text-primary mb-6">Order Management</h2>
           <OrderManagement />
         </div>
-        <div className="border-t border-gray-200 pt-8">
+        <div className="bg-white p-8 rounded-xl shadow-lg border border-accent/20">
+          <h2 className="text-2xl font-bold text-primary mb-6">User Management</h2>
           <UserManagement />
         </div>
-        <div className="border-t border-gray-200 pt-8">
+        <div className="bg-white p-8 rounded-xl shadow-lg border border-accent/20">
+          <h2 className="text-2xl font-bold text-primary mb-6">Category Management</h2>
           <CategoryManagement />
         </div>
-        <div className="border-t border-gray-200 pt-8">
+        <div className="bg-white p-8 rounded-xl shadow-lg border border-accent/20">
+          <h2 className="text-2xl font-bold text-primary mb-6">Coupon Management</h2>
           <CouponManagement />
         </div>
       </div>

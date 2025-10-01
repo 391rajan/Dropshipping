@@ -1,17 +1,16 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useCompare } from '../context/CompareContext';
+import { FaTimes, FaShoppingCart, FaTrash, FaBalanceScale } from 'react-icons/fa';
 
 const Compare = () => {
-  const navigate = useNavigate();
   const { addToCart } = useCart();
   const { compareItems, loading, removeFromCompare, clearCompareList } = useCompare();
 
   const handleAddToCart = async (product) => {
     try {
       await addToCart(product);
-      // Optionally remove from compare after adding to cart
       await removeFromCompare(product._id);
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -20,144 +19,98 @@ const Compare = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex flex-col justify-center items-center min-h-screen">
+        <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-primary"></div>
+        <p className="mt-4 text-lg text-accent">Loading comparison...</p>
       </div>
     );
   }
 
-
+  const features = [
+    { key: 'name', label: 'Name' },
+    { key: 'price', label: 'Price', format: (p) => `$${p.toFixed(2)}` },
+    { key: 'category', label: 'Category' },
+    { key: 'countInStock', label: 'Stock', format: (s) => s > 0 ? 'In Stock' : 'Out of Stock' },
+    { key: 'description', label: 'Description' },
+  ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Compare Products</h1>
+    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl sm:text-5xl font-bold text-primary mb-4">Compare Products</h1>
+        <p className="text-accent/90 text-lg max-w-2xl mx-auto">Side-by-side comparison to help you choose the best product.</p>
+      </div>
+      <div className="flex justify-end items-center mb-8">
         {compareItems.length > 0 && (
           <button
             onClick={clearCompareList}
-            className="text-red-500 hover:text-red-600"
+            className="flex items-center gap-2 bg-red-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-red-600 transition-colors shadow-md"
           >
+            <FaTrash size={18} />
             Clear All
           </button>
         )}
       </div>
 
       {compareItems.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-gray-600 mb-4">No products to compare</p>
-          <button
-            onClick={() => navigate('/shop')}
-            className="text-blue-500 hover:text-blue-600"
+        <div className="text-center bg-white p-12 rounded-xl shadow-lg border border-accent/20 max-w-lg mx-auto">
+          <FaBalanceScale className="text-6xl text-primary mx-auto mb-6" />
+          <p className="text-xl text-accent/90 mb-6">You have no products to compare.</p>
+          <Link
+            to="/shop"
+            className="inline-flex items-center gap-2 bg-primary hover:bg-accent text-white font-semibold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
           >
             Continue Shopping
-          </button>
+          </Link>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="p-4 text-left">Features</th>
-                {compareItems.map(item => (
-                  <th key={item._id} className="p-4 text-left min-w-[250px]">
-                    <div className="relative">
-                      <button
-                        onClick={() => removeFromCompare(item._id)}
-                        className="absolute top-0 right-0 text-gray-500 hover:text-red-500"
-                      >
-                        ✕
-                      </button>
+        <div className="overflow-x-auto bg-white rounded-xl shadow-lg border border-accent/20 p-6">
+          <div className="grid gap-6" style={{ gridTemplateColumns: `auto repeat(${compareItems.length}, minmax(250px, 1fr))` }}>
+            {/* Feature Headers Column */}
+            <div className="font-semibold text-accent space-y-4 pt-64"> {/* Spacer for image height */}
+              {features.map(f => <div key={f.key} className="h-20 flex items-center font-bold text-lg">{f.label}</div>)}
+              <div className="h-20 flex items-center font-bold text-lg">Action</div>
+            </div>
+
+            {/* Product Columns */}
+            {compareItems.map(item => (
+              <div key={item._id} className="relative text-center border-l border-accent/10 px-4">
+                <button
+                  onClick={() => removeFromCompare(item._id)}
+                  className="absolute top-0 right-2 text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-100 transition-colors"
+                >
+                  <FaTimes size={20} />
+                </button>
+                <Link to={`/product/${item._id}`}>
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-56 object-cover rounded-lg mb-4 border border-accent/20"
+                  />
+                </Link>
+                <div className="space-y-4">
+                  {features.map(f => (
+                    <div key={f.key} className="h-20 flex items-center justify-center text-accent/90 px-2">
+                      {f.format ? f.format(item[f.key]) : item[f.key]}
                     </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {/* Image Row */}
-              <tr>
-                <td className="border p-4">Image</td>
-                {compareItems.map(item => (
-                  <td key={item._id} className="border p-4">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-48 object-cover rounded"
-                    />
-                  </td>
-                ))}
-              </tr>
-
-              {/* Name Row */}
-              <tr>
-                <td className="border p-4">Name</td>
-                {compareItems.map(item => (
-                  <td key={item._id} className="border p-4 font-medium">
-                    {item.name}
-                  </td>
-                ))}
-              </tr>
-
-              {/* Price Row */}
-              <tr>
-                <td className="border p-4">Price</td>
-                {compareItems.map(item => (
-                  <td key={item._id} className="border p-4">
-                    ${item.price.toFixed(2)}
-                  </td>
-                ))}
-              </tr>
-
-              {/* Category Row */}
-              <tr>
-                <td className="border p-4">Category</td>
-                {compareItems.map(item => (
-                  <td key={item._id} className="border p-4">
-                    {item.category}
-                  </td>
-                ))}
-              </tr>
-
-              {/* Stock Row */}
-              <tr>
-                <td className="border p-4">Stock</td>
-                {compareItems.map(item => (
-                  <td key={item._id} className="border p-4">
-                    {item.countInStock > 0 ? 'In Stock' : 'Out of Stock'}
-                  </td>
-                ))}
-              </tr>
-
-              {/* Description Row */}
-              <tr>
-                <td className="border p-4">Description</td>
-                {compareItems.map(item => (
-                  <td key={item._id} className="border p-4">
-                    {item.description}
-                  </td>
-                ))}
-              </tr>
-
-              {/* Action Row */}
-              <tr>
-                <td className="border p-4">Action</td>
-                {compareItems.map(item => (
-                  <td key={item._id} className="border p-4">
+                  ))}
+                  <div className="h-20 flex items-center justify-center">
                     <button
                       onClick={() => handleAddToCart(item)}
                       disabled={item.countInStock === 0}
-                      className={`w-full py-2 rounded ${
+                      className={`w-full py-3 rounded-full font-semibold text-white transition-all duration-300 shadow-md transform hover:scale-105 ${
                         item.countInStock === 0
-                          ? 'bg-gray-300 cursor-not-allowed'
-                          : 'bg-blue-500 hover:bg-blue-600 text-white'
+                          ? 'bg-gray-400 cursor-not-allowed'
+                          : 'bg-primary hover:bg-accent'
                       }`}
                     >
-                      {item.countInStock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                      {item.countInStock === 0 ? 'Out of Stock' : <><FaShoppingCart className="inline-block mr-2" /> Add to Cart</>}
                     </button>
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

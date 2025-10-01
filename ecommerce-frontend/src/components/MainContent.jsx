@@ -1,14 +1,35 @@
 // src/pages/Home.jsx
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
+import {
+  FaShoppingCart,
+  FaStar,
+  FaHeart,
+  FaGift,
+  FaRocket,
+  FaHeadset,
+  FaSyncAlt,
+  FaCreditCard,
+} from "react-icons/fa";
+import {
+  FaComputer,
+  FaShirt,
+  FaPersonDotsFromLine,
+  FaPersonRunning,
+  FaHouse,
+  FaPlane,
+} from "react-icons/fa6";
+import { BsSendFill } from "react-icons/bs";
+import toast from "react-hot-toast";
 import HeroSection from "../components/HeroSection";
 import ProductCard from "../components/ProductCard";
-import { productAPI } from "../services/api";
+import { newsletterAPI, productAPI } from "../services/api";
 
-function Home() {
+function MainContent() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -25,21 +46,49 @@ function Home() {
     fetchProducts();
   }, []);
 
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) {
+      toast.error("Please enter your email.");
+      return;
+    }
+    try {
+      await newsletterAPI.subscribe({ email });
+      toast.success("Thank you for subscribing!");
+      setEmail("");
+    } catch (error) {
+      toast.error("Subscription failed. Please try again later.");
+      console.error(error);
+    }
+  };
+
   // Example categories
   const categories = [
-    { name: "Electronics", icon: "💻" },
-    { name: "Clothing", icon: "👕" },
-    { name: "Accessories", icon: "🎒" },
-    { name: "Fitness", icon: "🏋️" },
-    { name: "Home", icon: "🏠" },
-    { name: "Travel", icon: "✈️" },
+    { name: "Electronics", icon: <FaComputer /> },
+    { name: "Clothing", icon: <FaShirt /> },
+    { name: "Accessories", icon: <FaPersonDotsFromLine /> },
+    { name: "Fitness", icon: <FaPersonRunning /> },
+    { name: "Home", icon: <FaHouse /> },
+    { name: "Travel", icon: <FaPlane /> },
   ];
 
   // Example testimonials
   const testimonials = [
-    { name: "Amit S.", text: "Great quality and fast shipping! Highly recommend this store.", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
-    { name: "Priya K.", text: "Customer support was super helpful. Love my new products!", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-    { name: "Rahul D.", text: "Easy returns and amazing deals. Will shop again!", avatar: "https://randomuser.me/api/portraits/men/65.jpg" },
+    {
+      name: "Amit S.",
+      text: "Great quality and fast shipping! Highly recommend this store.",
+      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+    },
+    {
+      name: "Priya K.",
+      text: "Customer support was super helpful. Love my new products!",
+      avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    },
+    {
+      name: "Rahul D.",
+      text: "Easy returns and amazing deals. Will shop again!",
+      avatar: "https://randomuser.me/api/portraits/men/65.jpg",
+    },
   ];
 
   // Example brands
@@ -59,11 +108,16 @@ function Home() {
 
       {/* Categories Section */}
       <section className="container mx-auto px-4 md:px-8 py-8">
-        <h2 className="text-2xl font-bold text-accent text-center mb-6">Shop by Category</h2>
+        <h2 className="text-2xl font-bold text-accent text-center mb-6">
+          Shop by Category
+        </h2>
         <div className="flex flex-wrap justify-center gap-4 md:gap-8">
           {categories.map((cat) => (
-            <Link key={cat.name} to={`/shop?category=${cat.name.toLowerCase()}`}
-              className="flex flex-col items-center bg-white rounded-xl shadow p-4 w-28 hover:bg-primary/10 transition-colors border border-accent/20">
+            <Link
+              key={cat.name}
+              to={`/shop?category=${cat.name.toLowerCase()}`}
+              className="flex flex-col items-center bg-white rounded-xl shadow p-4 w-28 hover:bg-primary/10 transition-colors border border-accent/20"
+            >
               <span className="text-3xl mb-2">{cat.icon}</span>
               <span className="text-accent font-medium">{cat.name}</span>
             </Link>
@@ -75,14 +129,17 @@ function Home() {
       {offers.length > 0 && (
         <section className="container mx-auto px-4 md:px-8 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-primary">Limited-Time Offers</h2>
-            <span className="text-accent text-sm bg-accent/10 rounded-full px-4 py-1 mt-2 md:mt-0">Hurry! While stocks last</span>
+            <h2 className="text-2xl font-bold text-primary">
+              Limited-Time Offers
+            </h2>
+            <span className="text-accent text-sm bg-accent/10 rounded-full px-4 py-1 mt-2 md:mt-0">
+              Hurry! While stocks last
+            </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
             {offers.map((product) => (
               <ProductCard key={product._id} product={product} />
-            ))
-          }
+            ))}
           </div>
         </section>
       )}
@@ -94,15 +151,23 @@ function Home() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 xl:gap-10 justify-items-center">
           {loading ? (
-            <div className="col-span-full text-center text-gray-500 py-10">Loading products...</div>
+            <div className="col-span-full text-center text-gray-500 py-10">
+              Loading products...
+            </div>
           ) : error ? (
-            <div className="col-span-full text-center text-red-500 py-10">{error}</div>
+            <div className="col-span-full text-center text-red-500 py-10">
+              {error}
+            </div>
           ) : products.length === 0 ? (
-            <div className="col-span-full text-center text-gray-500 py-10">No products found.</div>
+            <div className="col-span-full text-center text-gray-500 py-10">
+              No products found.
+            </div>
           ) : (
-            products.map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))
+            products
+              .slice(0, 4)
+              .map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))
           )}
         </div>
         <div className="text-center mt-16">
@@ -118,27 +183,45 @@ function Home() {
       {/* Why Shop With Us */}
       <section className="bg-primary/10 py-12">
         <div className="container mx-auto px-4 md:px-8 text-center">
-          <h3 className="text-2xl font-bold text-primary mb-6">Why Shop With Us?</h3>
+          <h3 className="text-2xl font-bold text-primary mb-6">
+            Why Shop With Us?
+          </h3>
           <div className="flex flex-wrap justify-center gap-8">
             <div className="flex flex-col items-center w-40">
-              <span className="text-4xl mb-2">🚚</span>
+              <span className="text-4xl mb-2">
+                <FaRocket />
+              </span>
               <span className="font-semibold text-accent">Fast Shipping</span>
-              <span className="text-accent/80 text-sm">Get your products quickly, wherever you are.</span>
+              <span className="text-accent/80 text-sm">
+                Get your products quickly, wherever you are.
+              </span>
             </div>
             <div className="flex flex-col items-center w-40">
-              <span className="text-4xl mb-2">🔒</span>
+              <span className="text-4xl mb-2">
+                <FaCreditCard />
+              </span>
               <span className="font-semibold text-accent">Secure Payments</span>
-              <span className="text-accent/80 text-sm">Your transactions are safe with us.</span>
+              <span className="text-accent/80 text-sm">
+                Your transactions are safe with us.
+              </span>
             </div>
             <div className="flex flex-col items-center w-40">
-              <span className="text-4xl mb-2">↩️</span>
+              <span className="text-4xl mb-2">
+                <FaSyncAlt />
+              </span>
               <span className="font-semibold text-accent">Easy Returns</span>
-              <span className="text-accent/80 text-sm">Hassle-free returns within 7 days.</span>
+              <span className="text-accent/80 text-sm">
+                Hassle-free returns within 7 days.
+              </span>
             </div>
             <div className="flex flex-col items-center w-40">
-              <span className="text-4xl mb-2">💬</span>
+              <span className="text-4xl mb-2">
+                <FaHeadset />
+              </span>
               <span className="font-semibold text-accent">24/7 Support</span>
-              <span className="text-accent/80 text-sm">We’re here to help anytime.</span>
+              <span className="text-accent/80 text-sm">
+                We’re here to help anytime.
+              </span>
             </div>
           </div>
         </div>
@@ -146,11 +229,20 @@ function Home() {
 
       {/* Testimonials */}
       <section className="container mx-auto px-4 md:px-8 py-12">
-        <h3 className="text-2xl font-bold text-accent text-center mb-8">What Our Customers Say</h3>
+        <h3 className="text-2xl font-bold text-accent text-center mb-8">
+          What Our Customers Say
+        </h3>
         <div className="flex flex-wrap justify-center gap-8">
           {testimonials.map((t) => (
-            <div key={t.name} className="bg-white rounded-xl shadow p-6 w-80 flex flex-col items-center border border-accent/20">
-              <img src={t.avatar} alt={t.name} className="w-16 h-16 rounded-full mb-3 object-cover" />
+            <div
+              key={t.name}
+              className="bg-white rounded-xl shadow p-6 w-80 flex flex-col items-center border border-accent/20"
+            >
+              <img
+                src={t.avatar}
+                alt={t.name}
+                className="w-16 h-16 rounded-full mb-3 object-cover"
+              />
               <p className="text-accent/90 italic mb-2">“{t.text}”</p>
               <span className="font-semibold text-primary">{t.name}</span>
             </div>
@@ -161,19 +253,26 @@ function Home() {
       {/* Newsletter Signup */}
       <section className="bg-accent/10 py-12">
         <div className="container mx-auto px-4 md:px-8 text-center">
-          <h3 className="text-2xl font-bold text-accent mb-4">Get Exclusive Deals & Updates</h3>
-          <form className="flex flex-col sm:flex-row justify-center gap-4 max-w-xl mx-auto">
+          <h3 className="text-2xl font-bold text-accent mb-4">
+            Get Exclusive Deals & Updates
+          </h3>
+          <form
+            className="flex flex-col sm:flex-row justify-center gap-4 max-w-xl mx-auto"
+            onSubmit={handleSubscribe}
+          >
             <input
               type="email"
               placeholder="Enter your email"
               className="flex-1 px-4 py-3 rounded-full border border-accent focus:ring-2 focus:ring-primary outline-none"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <button
               type="submit"
               className="bg-primary hover:bg-accent text-white font-semibold px-8 py-3 rounded-full shadow-lg transition-all duration-300"
             >
-              Subscribe
+              <BsSendFill />
             </button>
           </form>
         </div>
@@ -181,10 +280,17 @@ function Home() {
 
       {/* Brands/Partners */}
       <section className="container mx-auto px-4 md:px-8 py-10">
-        <h3 className="text-xl font-bold text-accent text-center mb-6">Our Trusted Brands & Partners</h3>
+        <h3 className="text-xl font-bold text-accent text-center mb-6">
+          Our Trusted Brands & Partners
+        </h3>
         <div className="flex flex-wrap justify-center items-center gap-8">
           {brands.map((src, i) => (
-            <img key={i} src={src} alt="Brand logo" className="h-12 object-contain grayscale opacity-80 hover:opacity-100 transition" />
+            <img
+              key={i}
+              src={src}
+              alt="Brand logo"
+              className="h-12 object-contain grayscale opacity-80 hover:opacity-100 transition"
+            />
           ))}
         </div>
       </section>
@@ -192,4 +298,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default MainContent;

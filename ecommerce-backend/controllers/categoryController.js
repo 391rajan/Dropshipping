@@ -1,4 +1,5 @@
 const Category = require('../models/Category');
+const Product = require('../models/Product');
 const slugify = require('slugify');
 
 // Get all categories
@@ -138,15 +139,53 @@ exports.getCategoryById = async (req, res) => {
   }
 };
 
+// Get category by slug
+exports.getCategoryBySlug = async (req, res) => {
+  try {
+    const category = await Category.findOne({ slug: req.params.slug })
+      .populate('parent', 'name slug')
+      .populate('children', 'name slug');
+      
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found' });
+    }
+    
+    res.json(category);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching category', error: error.message });
+  }
+};
+
 // Get category products
 exports.getCategoryProducts = async (req, res) => {
   try {
     const { id } = req.params;
-    const { page = 1, limit = 10, sort = '-createdAt' } = req.query;
+    const { page = 1, limit = 10, sort = '-createdAt', sortBy } = req.query;
 
     const category = await Category.findById(id);
     if (!category) {
       return res.status(404).json({ message: 'Category not found' });
+    }
+
+    // Set up sort configuration
+    let sortConfig = sort;
+    if (sortBy) {
+      switch (sortBy) {
+        case 'price_asc':
+          sortConfig = { price: 1 };
+          break;
+        case 'price_desc':
+          sortConfig = { price: -1 };
+          break;
+        case 'name_asc':
+          sortConfig = { name: 1 };
+          break;
+        case 'name_desc':
+          sortConfig = { name: -1 };
+          break;
+        default:
+          sortConfig = { createdAt: -1 };
+      }
     }
 
     // Get all descendant category IDs
@@ -157,28 +196,38 @@ exports.getCategoryProducts = async (req, res) => {
       category._id,
       ...descendantCategories.map(cat => cat._id)
     ];
+    
+    console.log('Category:', category.name);
+    console.log('CategoryIds for query:', categoryIds);
 
-    const products = await Product.find({
+    console.log('Finding products with categoryIds:', categoryIds);
+    console.log('Sort config:', sortConfig);
+    
+    const query = {
       category: { $in: categoryIds },
       isActive: true
-    })
-      .sort(sort)
-      .skip((page - 1) * limit)
+    };
+    console.log('Query:', query);
+    
+    const products = await Product.find(query)
+      .sort(sortConfig)
+      .skip((page - 1) * parseInt(limit))
       .limit(parseInt(limit))
       .populate('category', 'name slug');
-
-    const total = await Product.countDocuments({
-      category: { $in: categoryIds },
-      isActive: true
-    });
+    
+    console.log('Found products:', products.length);
+    
+    const total = await Product.countDocuments(query);
+    console.log('Total products:', total);
 
     res.json({
       products,
-      totalPages: Math.ceil(total / limit),
-      currentPage: page,
+      totalPages: Math.ceil(total / parseInt(limit)),
+      currentPage: parseInt(page),
       total
     });
   } catch (error) {
+    console.error('Error in getCategoryProducts:', error);
     res.status(500).json({ message: 'Error fetching category products', error: error.message });
   }
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { productAPI, categoryAPI } from '../services/api';
 import ProductCard from '../components/ProductCard';
+import { FaSearch } from 'react-icons/fa';
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
@@ -53,38 +54,33 @@ const SearchResults = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex flex-col justify-center items-center min-h-screen">
+        <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-primary"></div>
+        <p className="mt-4 text-lg text-accent">Searching for products...</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">
-          Search Results for "{query}"
+    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mb-8 bg-primary/10 p-8 rounded-xl text-center">
+        <h1 className="text-4xl font-bold text-primary mb-2">
+          Search Results
         </h1>
-        <p className="text-gray-600">
-          {products.length} results found
-        </p>
+        <p className="text-accent/90 text-lg">Showing results for: <span className="font-semibold">"{query}"</span></p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Filters Sidebar */}
-        <div className="lg:col-span-1 space-y-6">
-          <div>
-            <h2 className="text-lg font-semibold mb-4">Filters</h2>
-
-            {/* Category Filter */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+        <aside className="lg:col-span-1 space-y-8 h-fit sticky top-24">
+          <div className="bg-white p-6 rounded-xl shadow-lg border border-accent/20">
+            <h2 className="text-xl font-semibold text-accent mb-4">Filters</h2>
+            
             <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">
-                Category
-              </label>
+              <label className="block text-sm font-medium text-accent/80 mb-2">Category</label>
               <select
                 value={filters.category}
                 onChange={(e) => handleFilterChange('category', e.target.value)}
-                className="w-full border rounded-md p-2"
+                className="w-full border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
               >
                 <option value="">All Categories</option>
                 {categories.map(category => (
@@ -95,18 +91,15 @@ const SearchResults = () => {
               </select>
             </div>
 
-            {/* Price Range Filter */}
             <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">
-                Price Range
-              </label>
+              <label className="block text-sm font-medium text-accent/80 mb-2">Price Range</label>
               <div className="flex items-center space-x-2">
                 <input
                   type="number"
                   placeholder="Min"
                   value={filters.minPrice}
                   onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                  className="w-1/2 border rounded-md p-2"
+                  className="w-1/2 border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
                 />
                 <span>-</span>
                 <input
@@ -114,20 +107,17 @@ const SearchResults = () => {
                   placeholder="Max"
                   value={filters.maxPrice}
                   onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                  className="w-1/2 border rounded-md p-2"
+                  className="w-1/2 border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
                 />
               </div>
             </div>
 
-            {/* Sort By */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">
-                Sort By
-              </label>
+            <div>
+              <label className="block text-sm font-medium text-accent/80 mb-2">Sort By</label>
               <select
                 value={filters.sortBy}
                 onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                className="w-full border rounded-md p-2"
+                className="w-full border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
               >
                 <option value="relevance">Relevance</option>
                 <option value="price_asc">Price: Low to High</option>
@@ -136,27 +126,32 @@ const SearchResults = () => {
               </select>
             </div>
           </div>
-        </div>
+        </aside>
 
-        {/* Products Grid */}
-        <div className="lg:col-span-3">
+        <main className="lg:col-span-3">
+          <div className="mb-6 bg-white p-4 rounded-xl shadow-md border border-accent/20">
+            <p className="font-semibold text-accent">{products.length} Product{products.length !== 1 ? 's' : ''} Found</p>
+          </div>
+
           {error ? (
-            <div className="text-center text-red-500">{error}</div>
+            <div className="text-center text-red-500 bg-red-100 p-8 rounded-xl shadow-lg border border-red-200">{error}</div>
           ) : products.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-600 mb-4">No products found matching your criteria</p>
-              <Link to="/shop" className="text-blue-500 hover:text-blue-600">
-                Browse all products
+            <div className="text-center py-16 bg-white rounded-xl shadow-md border border-accent/20">
+              <FaSearch className="text-6xl text-accent/30 mx-auto mb-6" />
+              <p className="text-xl text-accent/90 mb-4">No products found for "{query}".</p>
+              <p className="text-accent/80 mb-6">Try a different search term or browse our categories.</p>
+              <Link to="/shop" className="inline-block bg-primary hover:bg-accent text-white font-semibold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300">
+                Browse All Products
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
               {products.map(product => (
                 <ProductCard key={product._id} product={product} />
               ))}
             </div>
           )}
-        </div>
+        </main>
       </div>
     </div>
   );

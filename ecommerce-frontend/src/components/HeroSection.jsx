@@ -16,7 +16,7 @@ const heroSlides = [
     title: "Unbeatable Deals This Week!",
     subtitle: "Don't miss out on limited-time offers.",
     ctaText: "Explore Deals",
-    ctaLink: "/deals",
+    ctaLink: "/offers",
   },
   {
     image: "https://placehold.co/1600x600/2ecc71/ffffff?text=Quality+Delivered", // Placeholder Image

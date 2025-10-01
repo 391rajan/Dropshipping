@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { productAPI, categoryAPI } from '../services/api';
 import ProductCard from '../components/ProductCard';
-import { ChevronDown, ListFilter } from 'lucide-react';
+import { FaChevronDown, FaFilter } from 'react-icons/fa';
 
 const Shop = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -67,7 +66,6 @@ const Shop = () => {
 
     fetchProducts();
 
-    // Update URL
     const params = new URLSearchParams();
     if (filters.category !== 'all') params.set('category', filters.category);
     if (filters.price !== 'all') params.set('price', filters.price);
@@ -91,16 +89,6 @@ const Shop = () => {
     });
   };
 
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) {
-      return 'https://via.placeholder.com/300'; // Default placeholder
-    }
-    if (imagePath.startsWith('http')) {
-      return imagePath;
-    }
-    return `http://localhost:5000/${imagePath.replace(/\\/g, '/')}`;
-  };
-
   const priceRanges = [
     { value: 'all', label: 'All Prices' },
     { value: '0-50', label: '$0 - $50' },
@@ -118,28 +106,26 @@ const Shop = () => {
   ];
 
   const FilterSidebar = () => (
-    <aside className="w-full md:w-64 lg:w-72 space-y-6">
-      {/* Search Filter */}
+    <aside className="w-full md:w-64 lg:w-72 space-y-8 bg-white p-6 rounded-xl shadow-lg border border-accent/20 h-fit sticky top-24">
       <div>
-        <h3 className="font-semibold mb-2 text-lg">Search Products</h3>
+        <h3 className="font-semibold mb-3 text-xl text-accent">Search Products</h3>
         <input
           type="text"
           name="search"
           value={filters.search}
           onChange={handleFilterChange}
           placeholder="Search by name..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-3 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
         />
       </div>
 
-      {/* Category Filter */}
       <div>
-        <h3 className="font-semibold mb-2 text-lg">Categories</h3>
+        <h3 className="font-semibold mb-3 text-xl text-accent">Categories</h3>
         <select
           name="category"
           value={filters.category}
           onChange={handleFilterChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-3 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
         >
           <option value="all">All Categories</option>
           {categories.map(cat => (
@@ -148,14 +134,13 @@ const Shop = () => {
         </select>
       </div>
 
-      {/* Price Filter */}
       <div>
-        <h3 className="font-semibold mb-2 text-lg">Price Range</h3>
+        <h3 className="font-semibold mb-3 text-xl text-accent">Price Range</h3>
         <select
           name="price"
           value={filters.price}
           onChange={handleFilterChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-3 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
         >
           {priceRanges.map(range => (
             <option key={range.value} value={range.value}>{range.label}</option>
@@ -163,10 +148,9 @@ const Shop = () => {
         </select>
       </div>
 
-      {/* Clear Filters Button */}
       <button
         onClick={clearFilters}
-        className="w-full py-2 px-4 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+        className="w-full py-3 px-4 bg-gray-200 text-accent font-semibold rounded-lg hover:bg-gray-300 transition-colors"
       >
         Clear All Filters
       </button>
@@ -175,54 +159,51 @@ const Shop = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex flex-col justify-center items-center min-h-screen">
+        <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-primary"></div>
+        <p className="mt-4 text-lg text-accent">Loading products...</p>
       </div>
     );
   }
 
   if (error) {
-    return <div className="text-center text-red-500 py-10">{error}</div>;
+    return <div className="text-center text-red-500 py-10 bg-red-100 p-8 rounded-xl shadow-lg border border-red-200">{error}</div>;
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">Shop All Products</h1>
-        <p className="mt-2 text-lg text-gray-600">Find the perfect item from our collection.</p>
+    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      <div className="text-center mb-12">
+        <h1 className="text-5xl font-extrabold tracking-tight text-primary">Shop All Products</h1>
+        <p className="mt-3 text-lg text-accent/90">Find the perfect item from our extensive collection.</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Mobile Filter Button */}
+      <div className="flex flex-col md:flex-row gap-12">
         <div className="md:hidden mb-4">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary text-white rounded-lg hover:bg-accent shadow-md"
           >
-            <ListFilter size={20} />
+            <FaFilter size={20} />
             <span>{sidebarOpen ? 'Hide' : 'Show'} Filters</span>
-            <ChevronDown size={20} className={`transition-transform ${sidebarOpen ? 'rotate-180' : ''}`} />
+            <FaChevronDown size={20} className={`transition-transform ${sidebarOpen ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
-        {/* Sidebar */}
         <div className={`md:block ${sidebarOpen ? 'block' : 'hidden'}`}>
           <FilterSidebar />
         </div>
 
-        {/* Main Content */}
         <main className="flex-1">
-          {/* Sorting and Results Count */}
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b">
-            <p className="text-gray-600 mb-2 sm:mb-0">Showing <span className="font-semibold">{filteredProducts.length}</span> products</p>
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b border-accent/20">
+            <p className="text-accent/90 mb-2 sm:mb-0">Showing <span className="font-semibold text-primary">{filteredProducts.length}</span> products</p>
             <div className="flex items-center gap-2">
-              <label htmlFor="sort" className="text-gray-600">Sort by:</label>
+              <label htmlFor="sort" className="text-accent/90">Sort by:</label>
               <select
                 id="sort"
                 name="sort"
                 value={filters.sort}
                 onChange={handleFilterChange}
-                className="px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="px-3 py-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
               >
                 {sortOptions.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -231,20 +212,15 @@ const Shop = () => {
             </div>
           </div>
 
-          {/* Products Grid */}
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProducts.map(product => (
-                <ProductCard
-                  key={product._id}
-                  product={product}
-                  
-                />
+                <ProductCard key={product._id} product={product} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
+            <div className="text-center py-16 bg-white rounded-xl shadow-md border border-accent/20">
+              <p className="text-xl text-accent/90 mb-4">No products found matching your criteria.</p>
             </div>
           )}
         </main>

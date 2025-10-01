@@ -30,6 +30,7 @@ import ResetPassword from "./pages/ResetPassword";
 import AuthCallback from "./pages/AuthCallback"; // Import the new component
 import EmailVerification from "./pages/EmailVerification";
 import OrderSuccess from "./pages/OrderSuccess";
+import { Toaster } from "react-hot-toast";
 
 // Component to conditionally render layout
 function AppRoutes() {
@@ -58,8 +59,8 @@ function AppRoutes() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/verify-email/:token" element={<EmailVerification />} />
           <Route path="/shop" element={<ShopAll />} />
-          <Route path="/deals" element={<Deals />} />
-          <Route path="/track-order" element={<TrackOrder />} />
+          <Route path="/offers" element={<Deals />} />
+          <Route path="/track-order/:orderId?" element={<TrackOrder />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
@@ -89,6 +90,15 @@ function App() {
           <WishlistProvider>
             <CompareProvider>
               <AppRoutes />
+              <Toaster
+                position="bottom-right"
+                toastOptions={{
+                  style: {
+                    background: "#333",
+                    color: "#fff",
+                  },
+                }}
+              />
             </CompareProvider>
           </WishlistProvider>
         </CartProvider>

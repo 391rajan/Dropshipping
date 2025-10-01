@@ -12,18 +12,21 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 const app = express();
 app.set('trust proxy', 1);
 
-// Set security HTTP headers
-app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
-
 // CORS Configuration
 const corsOptions = {
   // Replace with your frontend's URL in production.
   // It's good practice to use an environment variable for this.
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Default for Vite dev server, change to 3000 for CRA
+  origin: process.env.FRONTEND_URL || ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'], // Allow Vite and common dev ports
   credentials: true,
   optionsSuccessStatus: 200 // For legacy browser support
 };
 app.use(cors(corsOptions));
+
+// Set security HTTP headers
+app.use(helmet({ 
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: false // Disable CSP temporarily for development
+}));
 
 // Rate limiting to prevent brute-force attacks
 const limiter = rateLimit({

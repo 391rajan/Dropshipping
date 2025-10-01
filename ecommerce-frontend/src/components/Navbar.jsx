@@ -219,7 +219,7 @@ function Navbar() {
   <div className="hidden md:flex justify-center items-center h-12 px-4 md:px-8 border-t border-accent/20">
   <div className="flex gap-6 lg:gap-8 flex-wrap justify-center font-medium text-accent"> {/* Base text color */}
           <Link to="/shop" className="hover:text-primary transition-colors duration-200">Shop All</Link>
-          <Link to="/deals" className="hover:text-primary transition-colors duration-200">Deals</Link>
+          <Link to="/offers" className="hover:text-primary transition-colors duration-200">Deals</Link>
           <Link to="/track-order" className="hover:text-primary transition-colors duration-200">Track Order</Link>
           <Link to="/wishlist" className="hover:text-primary transition-colors duration-200">Wishlist</Link>
           <Link to="/about" className="hover:text-primary transition-colors duration-200">About Us</Link>
@@ -235,7 +235,7 @@ function Navbar() {
         >
           <Link to="/shop" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Shop All</Link>
           <Link to="/offers" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Deals</Link>
-          <Link to="/track" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Track Order</Link>
+          <Link to="/track-order" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Track Order</Link>
           <Link to="/wishlist" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Wishlist</Link>
           <Link to="/about" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
           <Link to="/contact" className="block py-2 px-2 hover:bg-primary/10 rounded text-accent hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Contact</Link>

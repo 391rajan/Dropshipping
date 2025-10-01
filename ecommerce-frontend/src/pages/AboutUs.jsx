@@ -19,46 +19,70 @@ const AboutUs = () => {
   return (
     <div className="bg-background text-accent">
       {/* Hero Section */}
-      <section className="bg-primary/10 py-16 text-center">
+      <section className="bg-primary/10 py-20 text-center">
         <div className="container mx-auto px-4 md:px-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">About Our Store</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
+            About Our Store
+          </h1>
           <p className="text-lg md:text-xl text-accent/90 max-w-3xl mx-auto">
-            Your one-stop shop for high-quality products, curated with passion and delivered with care.
+            Your one-stop shop for high-quality products, curated with passion
+            and delivered with care.
           </p>
         </div>
       </section>
 
       {/* Our Story & Mission Section */}
-      <section className="container mx-auto px-4 md:px-8 py-16">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+      <section className="container mx-auto px-4 md:px-8 py-20">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
           <div>
-            <h2 className="text-3xl font-bold text-primary mb-4">Our Story</h2>
-            <p className="mb-4 text-accent/80">
-              Founded in 2023, our store was born from a simple idea: to make great products accessible to everyone. What started as a small passion project has grown into a thriving online destination for shoppers who value quality, style, and convenience. We believe that shopping should be an enjoyable and seamless experience, and we've built our platform to reflect that.
+            <h2 className="text-3xl font-bold text-primary mb-6">Our Story</h2>
+            <p className="mb-4 text-accent/80 leading-relaxed">
+              Founded in 2023, our store was born from a simple idea: to make
+              great products accessible to everyone. What started as a small
+              passion project has grown into a thriving online destination for
+              shoppers who value quality, style, and convenience. We believe
+              that shopping should be an enjoyable and seamless experience, and
+              we've built our platform to reflect that.
             </p>
-            <p className="text-accent/80">
-              From our carefully curated collections to our dedicated customer support, every detail is designed with you in mind.
+            <p className="text-accent/80 leading-relaxed">
+              From our carefully curated collections to our dedicated customer
+              support, every detail is designed with you in mind.
             </p>
           </div>
           <div>
-            <h2 className="text-3xl font-bold text-primary mb-4">Our Mission</h2>
-            <p className="text-accent/80">
-              Our mission is to enrich our customers' lives by providing an exceptional selection of products that combine quality, innovation, and value. We are committed to creating a trusted and delightful shopping experience, fostering a community built on satisfaction and long-term relationships.
+            <h2 className="text-3xl font-bold text-primary mb-6">
+              Our Mission
+            </h2>
+            <p className="text-accent/80 leading-relaxed">
+              Our mission is to enrich our customers' lives by providing an
+              exceptional selection of products that combine quality,
+              innovation, and value. We are committed to creating a trusted and
+              delightful shopping experience, fostering a community built on
+              satisfaction and long-term relationships.
             </p>
           </div>
         </div>
       </section>
 
       {/* Our Values Section */}
-      <section className="bg-primary/10 py-16">
+      <section className="bg-primary/10 py-20">
         <div className="container mx-auto px-4 md:px-8 text-center">
-          <h2 className="text-3xl font-bold text-primary mb-10">Our Core Values</h2>
+          <h2 className="text-3xl font-bold text-primary mb-12">
+            Our Core Values
+          </h2>
           <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-10">
             {values.map((value) => (
-              <div key={value.title} className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md">
+              <div
+                key={value.title}
+                className="flex flex-col items-center p-8 bg-white rounded-xl shadow-lg border border-accent/20"
+              >
                 <span className="text-5xl mb-4">{value.icon}</span>
-                <h3 className="text-xl font-semibold text-accent mb-2">{value.title}</h3>
-                <p className="text-accent/80">{value.description}</p>
+                <h3 className="text-xl font-semibold text-accent mb-2">
+                  {value.title}
+                </h3>
+                <p className="text-accent/80 leading-relaxed">
+                  {value.description}
+                </p>
               </div>
             ))}
           </div>

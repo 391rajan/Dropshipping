@@ -6,6 +6,7 @@ const { protect, admin } = require('../middleware/auth');
 // Public routes
 router.get('/', categoryController.getCategories);
 router.get('/tree', categoryController.getCategoryTree);
+router.get('/slug/:slug', categoryController.getCategoryBySlug);
 router.get('/:id', categoryController.getCategoryById);
 router.get('/:id/products', categoryController.getCategoryProducts);
 

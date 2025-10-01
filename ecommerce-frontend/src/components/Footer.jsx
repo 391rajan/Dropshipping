@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Facebook, Instagram, Twitter } from "lucide-react";
 import { Link } from "react-router-dom"; // Import Link for internal routing
-import { subscribeToNewsletter } from '../services/api';
+import { newsletterAPI } from '../services/api';
 
 function Footer() {
   const currentYear = new Date().getFullYear();
@@ -10,7 +10,7 @@ function Footer() {
   const handleSubscribe = async (e) => {
     e.preventDefault();
     try {
-      const res = await subscribeToNewsletter({ email });
+      const res = await newsletterAPI.subscribe({ email });
       alert(res.message);
       setEmail('');
     } catch (error) {

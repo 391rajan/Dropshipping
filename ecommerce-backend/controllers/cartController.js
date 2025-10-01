@@ -5,16 +5,24 @@ const Coupon = require('../models/Coupon');
 // Helper function to calculate cart totals and apply coupons
 const _calculateCartTotals = async (cart) => {
   let subtotal = 0;
+  const validItems = [];
   for (const item of cart.items) {
-    const product = await Product.findById(item.product);
-    if (product) {
-      subtotal += product.price * item.quantity;
-    } else {
-      // Handle case where product might have been deleted
-      // For now, we'll just skip it or remove it from cart
-      cart.items = cart.items.filter(i => i.product.toString() !== item.product.toString());
+    // Ensure item.product is not null and is a valid ObjectId
+    if (item.product && item.product._id) { 
+      const product = await Product.findById(item.product._id);
+      if (product) {
+        subtotal += product.price * item.quantity;
+        validItems.push(item);
+      } 
+    } else if (item.product) {
+        const product = await Product.findById(item.product);
+        if (product) {
+            subtotal += product.price * item.quantity;
+            validItems.push(item);
+        }
     }
   }
+  cart.items = validItems;
   cart.subtotal = subtotal;
 
   let discount = 0;

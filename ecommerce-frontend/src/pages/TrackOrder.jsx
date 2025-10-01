@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import { orderAPI } from '../services/api';
 import OrderDetails from '../components/OrderDetails'; // Assuming this component can display a single order
 
 function TrackOrder() {
-  const [orderId, setOrderId] = useState('');
+  const { orderId: urlOrderId } = useParams();
+  const [orderId, setOrderId] = useState(urlOrderId || '');
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const handleTrackOrder = async (e) => {
-    e.preventDefault();
+  
+  const handleTrackOrder = useCallback(async (e) => {
+    if (e) e.preventDefault();
     if (!orderId.trim()) {
       setError('Please enter a valid Order ID.');
       return;
@@ -29,7 +31,13 @@ function TrackOrder() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orderId]); // Dependencies for useCallback
+
+  useEffect(() => {
+    if (urlOrderId) {
+      handleTrackOrder();
+    }
+  }, [urlOrderId, handleTrackOrder]);
 
   return (
     <main className="bg-gray-50 min-h-screen py-10">
